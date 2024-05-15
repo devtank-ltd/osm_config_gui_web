@@ -111,7 +111,8 @@ export class osm_flash_api_t extends STMApi {
                         }
                         return Promise.resolve();
                     }
-                    throw new Error(`Unexpected response: ${response}`);
+                    console.log(`Unexpected response: ${response}`);
+                    return Promise.reject();
                 })
                 .then(() => {
                     resolve();
@@ -239,7 +240,8 @@ export class rak3172_flash_api_t extends STMApi {
                         }
                         return Promise.resolve();
                     }
-                    throw new Error(`Unexpected Response: ${response}`);
+                    console.log(`Unexpected response: ${response}`);
+                    return Promise.reject();
                 })
                 .then(() => {
                     resolve();

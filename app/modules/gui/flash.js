@@ -49,7 +49,10 @@ class flash_controller_base_t {
                     return pid;
                 })
                 .then(resolve)
-                .catch(reject);
+                .catch((e) => {
+                    console.log(e);
+                    reject();
+                });
         });
     }
 
@@ -78,6 +81,12 @@ class flash_controller_base_t {
                     this.port.open({
                         baudRate: this.baudrate, databits: 8, stopbits: 1, parity: 'none',
                     });
+                    disable_interaction(false);
+                })
+                .catch(async () => {
+                    document.getElementById('progress').style.display = 'none';
+                    document.getElementById('progresslabel').textContent = 'Failed to write firmware, resetting OSM...';
+                    await stm_api.disconnect();
                     disable_interaction(false);
                 });
         }
@@ -134,48 +143,51 @@ class rak3172_flash_controller_t extends flash_controller_base_t {
                 commands: [],
             };
 
-            try {
-                stm_api.connect({ baudrate: this.baudrate, replyMode: false })
-                    .then(() => stm_api.cmdGET())
-                    .then((info) => {
-                        deviceInfo = {
-                            bl: info.blVersion,
-                            commands: info.commands,
-                            family: info.getFamily(),
-                        };
-                    })
-                    .then(() => {
-                        let pid;
-                        if (deviceInfo.family === 'STM32') {
-                            pid = stm_api.cmdGID();
-                        } else {
-                            pid = '-';
-                        }
-                        deviceInfo.pid = pid;
-                        return pid;
-                    })
-                    .then(resolve)
-                    .catch(reject);
-            } catch (e) {
-                console.log(e);
-                stm_api.disconnect();
-                disable_interaction(false);
-        }
+            stm_api.connect({ baudrate: this.baudrate, replyMode: false })
+                .then(() => stm_api.cmdGET())
+                .then((info) => {
+                    deviceInfo = {
+                        bl: info.blVersion,
+                        commands: info.commands,
+                        family: info.getFamily(),
+                    };
+                })
+                .then(() => {
+                    let pid;
+                    if (deviceInfo.family === 'STM32') {
+                        pid = stm_api.cmdGID();
+                    } else {
+                        pid = '-';
+                    }
+                    deviceInfo.pid = pid;
+                    return pid;
+                })
+                .then(resolve)
+                .catch((e) => {
+                    console.log(e);
+                    reject();
+                });
     });
 }
 
     flash_firmware(records) {
-        const serial = new WebSerial(this.port);
-        serial.onConnect = () => {};
-        serial.onDisconnect = () => {};
-        const stm_api = new rak3172_flash_api_t(serial, this.api_ext_params);
+            const serial = new WebSerial(this.port);
+            serial.onConnect = () => {};
+            serial.onDisconnect = () => {};
+            const stm_api = new rak3172_flash_api_t(serial, this.api_ext_params);
         this.flash_start(stm_api)
             .then(() => stm_api.eraseAll())
             .then(() => flash_controller_base_t.write_data(stm_api, records))
             .then(() => stm_api.disconnect())
-            .then(() => disable_interaction(false));
+            .then(() => disable_interaction(false))
+            .catch(async () => {
+                document.getElementById('progress').style.display = 'none';
+                document.getElementById('progresslabel').textContent = 'Failed to write comms firmware, resetting OSM....';
+                await stm_api.disconnect();
+                disable_interaction(false);
+            });
+        }
     }
-}
 
 export class firmware_t {
     constructor(dev) {
