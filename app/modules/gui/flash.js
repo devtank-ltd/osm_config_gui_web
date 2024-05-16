@@ -15,10 +15,20 @@ class flash_controller_base_t {
         this.flash_firmware = this.flash_firmware.bind(this);
     }
 
-    static async write_data(api, records) {
+    static async write_data(api, records, msg) {
         for (const rec of records) {
-            await api.write(rec.data, rec.address);
+            await api.write(rec.data, rec.address, null, msg);
         }
+    }
+
+    static async write_comms_data(api, records, msg) {
+        const records_len = records.length;
+        for (let i = 0; i < records.length; i += 1) {
+            const percentage = (i / records_len) * 100;
+            move_bar(percentage, msg);
+            await api.write(records[i].data, records[i].address, null, msg);
+        }
+        move_bar(null, null);
     }
 
     flash_start(stm_api) {
@@ -57,8 +67,9 @@ class flash_controller_base_t {
     }
 
     flash_firmware(fw_bin) {
-        const interval = 150;
-        move_bar(interval, 'Writing OSM firmware...');
+        const errlabel = document.getElementById('errorlabel');
+        errlabel.style.display = 'none';
+        const msg = 'Writing OSM firmware...';
         const disabled = disable_interaction(true);
         if (disabled) {
             let stm_api;
@@ -74,7 +85,7 @@ class flash_controller_base_t {
                 .then(() => stm_api.eraseAll())
                 .then(() => {
                     const records = this.get_records(fw_bin);
-                    return flash_controller_base_t.write_data(stm_api, records);
+                    return flash_controller_base_t.write_data(stm_api, records, msg);
                 })
                 .then(() => stm_api.disconnect())
                 .then(() => {
@@ -84,8 +95,8 @@ class flash_controller_base_t {
                     disable_interaction(false);
                 })
                 .catch(async () => {
-                    document.getElementById('progress').style.display = 'none';
-                    document.getElementById('progresslabel').textContent = 'Failed to write firmware, resetting OSM...';
+                    errlabel.style.display = 'block';
+                    errlabel.textContent = 'Failed to write firmware.';
                     await stm_api.disconnect();
                     disable_interaction(false);
                 });
@@ -142,7 +153,6 @@ class rak3172_flash_controller_t extends flash_controller_base_t {
                 pid: '-',
                 commands: [],
             };
-
             stm_api.connect({ baudrate: this.baudrate, replyMode: false })
                 .then(() => stm_api.cmdGET())
                 .then((info) => {
@@ -167,22 +177,32 @@ class rak3172_flash_controller_t extends flash_controller_base_t {
                     console.log(e);
                     reject();
                 });
-    });
-}
+        });
+    }
 
     flash_firmware(records) {
-            const serial = new WebSerial(this.port);
-            serial.onConnect = () => {};
-            serial.onDisconnect = () => {};
-            const stm_api = new rak3172_flash_api_t(serial, this.api_ext_params);
+        const serial = new WebSerial(this.port);
+        serial.onConnect = () => {};
+        serial.onDisconnect = () => {};
+        const stm_api = new rak3172_flash_api_t(serial, this.api_ext_params);
+        const proglabel = document.getElementById('progresslabel');
+        const errlabel = document.getElementById('errorlabel');
+        errlabel.style.display = 'none';
+        proglabel.style.display = 'block';
+        proglabel.textContent = 'Initiating comms firmware update...';
         this.flash_start(stm_api)
             .then(() => stm_api.eraseAll())
-            .then(() => flash_controller_base_t.write_data(stm_api, records))
+            .then(() => {
+                const msg = 'Writing LoRaWAN firmware...';
+                return flash_controller_base_t.write_comms_data(stm_api, records, msg);
+            })
             .then(() => stm_api.disconnect())
             .then(() => disable_interaction(false))
             .catch(async () => {
-                document.getElementById('progress').style.display = 'none';
-                document.getElementById('progresslabel').textContent = 'Failed to write comms firmware, resetting OSM....';
+                move_bar(null, null);
+                proglabel.style.display = 'none';
+                errlabel.style.display = 'block';
+                errlabel.textContent = 'Failed to write comms firmware.';
                 await stm_api.disconnect();
                 disable_interaction(false);
             });
@@ -284,8 +304,6 @@ export class rak3172_firmware_t {
                             e.target.result,
                         );
                         const rak3172_flash_controller = new rak3172_flash_controller_t(this.dev);
-                        const interval = 600;
-                        move_bar(interval, 'Writing LoRaWAN firmware...');
                         const disabled = disable_interaction(true);
                         rak3172_flash_controller.flash_firmware(records);
                     };

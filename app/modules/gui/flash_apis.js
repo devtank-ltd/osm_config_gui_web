@@ -1,5 +1,6 @@
 import { STMApi } from '../../libs/stm-serial-flasher/api/STMapi.js';
 import logger from '../../libs/stm-serial-flasher/api/Logger.js';
+import { move_bar } from './progressbar.js';
 
 const PIN_HIGH = false;
 const PIN_LOW = true;
@@ -34,6 +35,52 @@ export class osm_flash_api_t extends STMApi {
      * @param {object} params
      * @returns {Promise}
      */
+
+    async write(data, address, onProgress, msg) {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            logger.log(`Writing ${data.length} bytes to flash at address 0x${address.toString(16)} using ${this.writeBlockSize} bytes chunks`);
+            if (!this.serial.isOpen()) {
+                reject(new Error('Connection must be established before sending commands'));
+                return;
+            }
+
+            const blocksCount = Math.ceil(data.byteLength / this.writeBlockSize);
+
+            let offset = 0;
+            const blocks = [];
+            for (let i = 0; i < blocksCount; i += 1) {
+                const block = {};
+
+                if (i < blocksCount - 1) {
+                    block.data = data.subarray(offset, offset + this.writeBlockSize);
+                } else {
+                    block.data = data.subarray(offset);
+                }
+                offset += block.data.length;
+                blocks.push(block);
+            }
+
+            for (let i = 0; i < blocks.length; i += 1) {
+                const block = blocks[i];
+                try {
+                    if (onProgress) {
+                        onProgress(i, blocksCount);
+                    }
+                    const percentage = (i / blocks.length) * 100;
+                    move_bar(percentage, msg);
+                    await this.cmdWRITE(block.data, address + i * this.writeBlockSize);
+                } catch (e) {
+                    move_bar(null, null);
+                    reject(e);
+                    return;
+                }
+            }
+            logger.log('Finished writing');
+            move_bar(null, null);
+            resolve();
+        });
+    }
 
     async connect(params) {
         this.ewrLoadState = EwrLoadState.NOT_LOADED;

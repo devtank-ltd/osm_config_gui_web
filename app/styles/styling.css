@@ -48,6 +48,13 @@ input[type=number] {
   display: none;
 }
 
+.errorlabel {
+  margin: auto;
+  text-align: center;
+  line-height: 30px;
+  color: red;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
