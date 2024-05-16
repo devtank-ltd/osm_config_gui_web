@@ -62,5 +62,12 @@ $(BUILD_DIR)/.webroot/fw_releases: $(REAL_MODELS)
 	touch $@
 
 rakfw: $(WEBROOT_BUILD_DIR)/fw_releases
-	$(shell mkdir -p $(WEBROOT_BUILD_DIR)/fw_releases)
-	wget -O $(WEBROOT_BUILD_DIR)/fw_releases/RAK3172-E_latest_final.hex $(RAK_LATEST)
+	@if wget -q --spider http://opensmartmonitor.co.uk; then \
+		echo "Online"; \
+		mkdir -p $(WEBROOT_BUILD_DIR)/fw_releases; \
+		wget -O $(WEBROOT_BUILD_DIR)/fw_releases/RAK3172-E_latest_final.hex $(RAK_LATEST); \
+	else \
+		echo "No network, cannot download Rak firmware."; \
+	fi
+
+
