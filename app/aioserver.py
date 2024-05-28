@@ -14,7 +14,7 @@ import ssl
 from aiohttp import web
 import asyncio
 
-event_loop = asyncio.get_event_loop()
+event_loop =  asyncio.new_event_loop()
 tcpsockets = []
 all_processes = {}
 

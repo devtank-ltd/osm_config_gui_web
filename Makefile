@@ -1,17 +1,19 @@
+PROJ_DIR ?= .
+BUILD_DIR ?= $(PROJ_DIR)/build
+OSM_DIR ?= $(PROJ_DIR)/osm_firmware
+FW_GIT_TAG2 := $(shell cd $(OSM_DIR) && git describe --tags --abbrev=0 --dirty)
+WEBSERVE_DIR := $(PROJ_DIR)/app
 
-GIT_TAG2 := $(shell git describe --tags --abbrev=0 --dirty)
-
-RAK_LATEST := https://downloads.rakwireless.com/RUI/RUI3/Image/RAK3172-E_latest_final.hex
-WEBSERVE_DIR := $(OSM_DIR)/tools/osm_config_gui/app
-
-WEBROOT_BUILD_DIR := $(BUILD_DIR)/osm_config_gui/webroot
+WEBROOT_BUILD_DIR := $(BUILD_DIR)/webroot
 WEBROOT_LIB_BUILD_DIR := $(WEBROOT_BUILD_DIR)/libs
 
 define WEBSERVE_BUILT_FILES
 $(1)_SRC := $(shell find $(2) -type f)
-$(1) := $$(shell for x in $$($(1)_SRC); do echo $$(WEBROOT_BUILD_DIR)/`realpath --relative-to="$$(WEBSERVE_DIR)" "$$$${x}"`; done)
-$(1): $$(WEBROOT_BUILD_DIR)/%: $$($(2))/%
+$(1) := $$(patsubst $$(WEBSERVE_DIR)/%,$$(WEBROOT_BUILD_DIR)/%,$$($(1)_SRC))
+all: $$($(1))
+$$($(1)): $$(WEBROOT_BUILD_DIR)/%: $$(WEBSERVE_DIR)/%
 	@mkdir -p $$(@D)
+	echo $$< $$@
 	cp $$< $$@
 endef
 
@@ -22,19 +24,19 @@ $(eval $(call WEBSERVE_BUILT_FILES,WEBSERVE_STYLES,$(WEBSERVE_DIR)/styles))
 
 FW_VERSION_INFO := $(WEBROOT_BUILD_DIR)/fw_releases/latest_fw_info.json
 
-webroot: $(WEBROOT_BUILD_DIR)/index.html $(WEBROOT_BUILD_DIR)/favicon.ico $(WEBSERVE_GUI) $(WEBSERVE_BACKEND) $(WEBSERVE_IMG) $(WEBSERVE_STYLES) $(BUILD_DIR)/.webroot/libs $(BUILD_DIR)/osm_config_gui/aioserver.py $(BUILD_DIR)/.webroot/fw_releases rakfw
+webroot: $(WEBROOT_BUILD_DIR)/index.html $(WEBROOT_BUILD_DIR)/favicon.ico $(WEBSERVE_GUI) $(WEBSERVE_BACKEND) $(WEBSERVE_IMG) $(WEBSERVE_STYLES) $(BUILD_DIR)/.webroot/libs $(BUILD_DIR)/aioserver.py $(BUILD_DIR)/.webroot/fw_releases
 
 .PHONY: webhost
 
 webhost: webroot
-	cd $(BUILD_DIR)/osm_config_gui; \
+	cd $(BUILD_DIR); \
 	python3 ./aioserver.py -v
 
 $(WEBROOT_BUILD_DIR)/%: $(WEBSERVE_DIR)/%
 	@mkdir -p $(@D)
 	cp $< $@
 
-$(BUILD_DIR)/osm_config_gui/aioserver.py: $(WEBSERVE_DIR)/aioserver.py
+$(BUILD_DIR)/aioserver.py: $(WEBSERVE_DIR)/aioserver.py
 	@mkdir -p $(@D)
 	cp $< $@
 
@@ -54,20 +56,16 @@ $(BUILD_DIR)/.webroot/fw_releases: $(REAL_MODELS)
 	echo "[" > $(FW_VERSION_INFO); \
 	for x in $^; do \
 	    cp $(BUILD_DIR)/$${x}/complete.bin $(WEBROOT_BUILD_DIR)/fw_releases/$${x}_release.bin; \
-	    echo "  {\"tag\": \"$(GIT_TAG2)\", \"sha\": \"$(GIT_SHA1)\", \"path\": \"$${x}_release.bin\"}," >> $(FW_VERSION_INFO); \
+	    echo "  {\"tag\": \"$(FW_GIT_TAG2)\", \"sha\": \"$(FW_GIT_SHA1)\", \"path\": \"$${x}_release.bin\"}," >> $(FW_VERSION_INFO); \
 	done; \
 	truncate -s -2 $(FW_VERSION_INFO); \
 	echo "\n]" >> $(FW_VERSION_INFO);)
 	@mkdir -p $(@D)
 	touch $@
 
-rakfw: $(WEBROOT_BUILD_DIR)/fw_releases
-	@if wget -q --spider http://opensmartmonitor.co.uk; then \
-		echo "Online"; \
-		mkdir -p $(WEBROOT_BUILD_DIR)/fw_releases; \
-		wget -O $(WEBROOT_BUILD_DIR)/fw_releases/RAK3172-E_latest_final.hex $(RAK_LATEST); \
-	else \
-		echo "No network, cannot download Rak firmware."; \
-	fi
+dev_fw: $(WEBROOT_BUILD_DIR)/fw_releases
+	cp $(PROJ_DIR)/fw_releases/* $(WEBROOT_BUILD_DIR)/fw_releases/
 
 
+clean:
+	rm -rf $(BUILD_DIR)

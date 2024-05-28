@@ -1,0 +1,7 @@
+[submodule "osm_firmware"]
+	path = osm_firmware
+	url = ../osm_firmware.git
+[submodule "app/modules/stm-serial-flasher"]
+	path = app/modules/stm-serial-flasher
+	url = ../stm-serial-flasher.git
+	branch = dev_imports
