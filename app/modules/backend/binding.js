@@ -294,7 +294,6 @@ export class binding_t {
     async get_measurements() {
         await this.ll.write('measurements');
         const meas = await this.ll.read();
-        console.log(`IN GET MEAS: ${meas}`);
         const measurements = [];
         const meas_split = meas.split('\n\r');
         let start; let end; let regex; let interval; let interval_mins;
@@ -386,12 +385,27 @@ export class binding_t {
         await this.do_cmd(`cc_mp ${value} ${phase}`);
     }
 
+    async set_cc_type(phase, type_) {
+        let unit;
+        if (type_ === 'mV') {
+            unit = 'V';
+        }
+        else if (type_ === 'mA') {
+            unit = 'A';
+        }
+        else {
+            console.log('Invalid type');
+            return;
+        }
+        await this.do_cmd(`cc_type ${phase} ${unit}`);
+    }
+
     async get_cc_type(phase) {
         this.types = await this.do_cmd('cc_type');
         const regex = new RegExp(`CC${phase}\\sType:\\s([AV])`, 'g');
         const match = this.types.match(regex);
         if (match) {
-            return match[1];
+            return match[0];
         }
         return this.types;
     }

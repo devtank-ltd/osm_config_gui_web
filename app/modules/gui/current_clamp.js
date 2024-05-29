@@ -9,6 +9,7 @@ export class current_clamp_t {
         this.set_cc_exterior = this.set_cc_exterior.bind(this);
         this.set_cc_interior = this.set_cc_interior.bind(this);
         this.set_cc_midpoint = this.set_cc_midpoint.bind(this);
+        this.change_cc_type = this.change_cc_type.bind(this);
     }
 
     async open_cc() {
@@ -60,8 +61,8 @@ export class current_clamp_t {
 
         const headers = this.add_cc_table.tHead.insertRow();
         headers.insertCell().textContent = 'Measurement';
-        headers.insertCell().textContent = 'Primary';
-        headers.insertCell().textContent = 'Secondary';
+        headers.insertCell().textContent = 'Input';
+        headers.insertCell().textContent = 'Output';
         headers.insertCell().textContent = 'Midpoint';
 
         const top_level = [];
@@ -116,83 +117,92 @@ export class current_clamp_t {
                 cc_type = phase_three_type;
             }
             const cc_row = tbody.insertRow();
-            const [meas, ext, int, mp] = i;
+            const [meas, inp, outp, mp] = i;
 
-            const int_p = parseInt(parseFloat(int) * 1000, 10);
-            const ext_p = parseInt(ext, 10);
+            const output_p = parseInt(parseFloat(outp) * 1000, 10);
+            const input_p = parseInt(inp, 10);
             cc_row.insertCell().textContent = meas;
-            const ext_cell = cc_row.insertCell();
+            const input_cell = cc_row.insertCell();
 
-            const ext_cell_sel = document.createElement('select');
+            const input_sel = document.createElement('select');
             const opt1 = document.createElement('option');
-            opt1.text = 25;
+            opt1.text = 15;
             const opt2 = document.createElement('option');
-            opt2.text = 50;
+            opt2.text = 30;
             const opt3 = document.createElement('option');
-            opt3.text = 75;
+            opt3.text = 50;
             const opt4 = document.createElement('option');
             opt4.text = 100;
-            ext_cell_sel.add(opt1);
-            ext_cell_sel.add(opt2);
-            ext_cell_sel.add(opt3);
-            ext_cell_sel.add(opt4);
-            ext_cell_sel.addEventListener('change', this.set_cc_exterior);
+            const opt5 = document.createElement('option');
+            opt5.text = 200;
+            input_sel.add(opt1);
+            input_sel.add(opt2);
+            input_sel.add(opt3);
+            input_sel.add(opt4);
+            input_sel.add(opt5);
+            input_sel.addEventListener('change', this.set_cc_exterior);
 
-            for (let k = 0; k < ext_cell_sel.options.length; k += 1) {
-                const ext_cell_val = parseInt(ext_cell_sel[k].value, 10);
-                if (ext_cell_val === ext_p) {
-                    ext_cell_sel.selectedIndex = k;
+            for (let k = 0; k < input_sel.options.length; k += 1) {
+                const input_val = parseInt(input_sel[k].value, 10);
+                if (input_val === input_p) {
+                    input_sel.selectedIndex = k;
                     break;
                 }
             }
-            ext_cell_sel.style.float = 'left';
-            ext_cell.appendChild(ext_cell_sel);
+            input_sel.style.float = 'left';
+            input_cell.appendChild(input_sel);
             const primdiv = document.createElement('div');
             primdiv.textContent = 'A';
-            ext_cell.appendChild(primdiv);
+            input_cell.appendChild(primdiv);
 
-            const int_cell = cc_row.insertCell();
-            const int_cell_sel = document.createElement('select');
-            let unit;
+            const output_cell = cc_row.insertCell();
+            const output_cell_sel = document.createElement('select');
 
-            if (cc_type === 'A') {
-                const opt5 = document.createElement('option');
-                opt5.text = 25;
-                const opt6 = document.createElement('option');
-                opt6.text = 50;
-                const opt7 = document.createElement('option');
-                opt7.text = 75;
-                const opt8 = document.createElement('option');
-                opt8.text = 100;
-                int_cell_sel.add(opt5);
-                int_cell_sel.add(opt6);
-                int_cell_sel.add(opt7);
-                int_cell_sel.add(opt8);
-                unit = 'mA';
-            } else {
-                const opt5 = document.createElement('option');
-                opt5.text = 333;
-                const opt6 = document.createElement('option');
-                opt6.text = 1000;
-                int_cell_sel.add(opt5);
-                int_cell_sel.add(opt6);
-                unit = 'mV';
-            }
+            const opt6 = document.createElement('option');
+            opt6.text = 25;
+            const opt7 = document.createElement('option');
+            opt7.text = 50;
+            const opt8 = document.createElement('option');
+            opt8.text = 75;
+            const opt9 = document.createElement('option');
+            opt9.text = 100;
+            const opt10 = document.createElement('option');
+            opt10.text = 333;
+            const opt11 = document.createElement('option');
+            opt11.text = 1000;
+            output_cell_sel.add(opt6);
+            output_cell_sel.add(opt7);
+            output_cell_sel.add(opt8);
+            output_cell_sel.add(opt9);
+            output_cell_sel.add(opt10);
+            output_cell_sel.add(opt11);
 
-            int_cell_sel.addEventListener('change', this.set_cc_interior);
+            output_cell_sel.addEventListener('change', this.set_cc_interior);
 
-            for (let k = 0; k < int_cell_sel.options.length; k += 1) {
-                const int_cell_val = parseInt(int_cell_sel[k].value, 10);
-                if (int_cell_val === int_p) {
-                    int_cell_sel.selectedIndex = k;
+            for (let k = 0; k < output_cell_sel.options.length; k += 1) {
+                const output_cell_val = parseInt(output_cell_sel[k].value, 10);
+                if (output_cell_val === output_p) {
+                    output_cell_sel.selectedIndex = k;
                     break;
                 }
             }
-            int_cell_sel.style.float = 'left';
-            int_cell.appendChild(int_cell_sel);
-            const unitdiv = document.createElement('div');
-            unitdiv.textContent = unit;
-            int_cell.appendChild(unitdiv);
+            output_cell.appendChild(output_cell_sel);
+            const unitopt = document.createElement('select');
+            const unitopt1 = document.createElement('option');
+            unitopt1.text = 'mV';
+            const unitopt2 = document.createElement('option');
+            unitopt2.text = 'mA';
+            unitopt.add(unitopt1);
+            unitopt.add(unitopt2);
+            output_cell.appendChild(unitopt);
+            if (cc_type.includes('Type: V')) {
+                unitopt.selectedIndex = 0;
+            }
+            else if (cc_type.includes('Type: A')) {
+                unitopt.selectedIndex = 1;
+            }
+            unitopt.addEventListener('change', this.change_cc_type);
+
 
             const mp_cell = cc_row.insertCell();
             mp_cell.textContent = mp;
@@ -223,6 +233,29 @@ export class current_clamp_t {
         await this.dev.set_cc_gain(this.extphase, this.ext_val, this.interior);
         await disable_interaction(false);
     }
+
+    async change_cc_type(event) {
+        await disable_interaction(true);
+        this.extphase = event.target.parentNode.parentNode.cells[0].innerHTML;
+        this.val = event.srcElement.value;
+        switch (this.extphase) {
+            case 'CC1':
+                this.extphase = 1;
+                await this.dev.set_cc_type(this.extphase, this.val);
+                break;
+            case 'CC2':
+                this.extphase = 2;
+                await this.dev.set_cc_type(this.extphase, this.val);
+                break;
+            case 'CC3':
+                this.extphase = 3;
+                await this.dev.set_cc_type(this.extphase, this.val);
+                break;
+            default:
+                this.extphase = 'undefined';
+        }
+        await disable_interaction(false);
+        }
 
     async set_cc_interior(event) {
         await disable_interaction(true);
