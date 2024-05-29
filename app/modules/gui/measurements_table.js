@@ -85,11 +85,12 @@ export class measurements_table_t {
                         entry.addEventListener('focusout', this.set_interval);
                     }
                     if (index === 3) {
-                        const chk = document.createElement('input');
-                        chk.type = 'checkbox';
-                        const chkcell = r.insertCell();
-                        chkcell.appendChild(chk);
-                        chk.addEventListener('click', this.insert_last_value);
+                        const readbtn = document.createElement('button');
+                        readbtn.className = 'read-last-val-btn';
+                        readbtn.textContent = 'Get';
+                        const readbtncell = r.insertCell();
+                        readbtncell.appendChild(readbtn);
+                        readbtn.addEventListener('click', this.insert_last_value);
                     }
                 });
             }
@@ -180,14 +181,13 @@ export class measurements_table_t {
         const loader = document.getElementById('loader');
         loader.style.display = 'block';
         const last_val_index = 2;
-        const checkbox = e.target;
-        const table = checkbox.offsetParent.offsetParent;
+        const btn = e.target;
+        const table = btn.offsetParent.offsetParent;
         const row_index = e.srcElement.parentElement.parentNode.rowIndex;
         const meas = table.rows[row_index].cells[0].innerHTML;
         const val = await this.dev.get_value(`get_meas ${meas}`);
         const last_val_col = table.rows[row_index].cells[last_val_index];
         last_val_col.textContent = val;
-        checkbox.checked = false;
         loader.style.display = 'none';
         await disable_interaction(false);
     }

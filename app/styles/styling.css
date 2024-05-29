@@ -69,7 +69,12 @@ button {
   padding: 10px 20px;
   margin: 5px;
   cursor: pointer;
+}
 
+.read-last-val-btn {
+  font-size: small;
+  padding: 5px 10px;
+  margin: 2px;
 }
 
 button:hover {
