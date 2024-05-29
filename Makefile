@@ -1,7 +1,11 @@
 PROJ_DIR ?= .
 BUILD_DIR ?= $(PROJ_DIR)/build
 OSM_DIR ?= $(PROJ_DIR)/osm_firmware
+OSM_BUILD_DIR ?= $(OSM_DIR)/build
+MODEL_DIR ?= $(OSM_DIR)/model
 FW_GIT_TAG2 := $(shell cd $(OSM_DIR) && git describe --tags --abbrev=0 --dirty)
+FW_GIT_SHA1 := $(shell cd $(OSM_DIR) && printf "%.*s\n" 7 $$(git log -n 1 --format="%H"))
+REAL_MODELS = $(shell find $(MODEL_DIR)/* -maxdepth 0 -type d ! -name "*penguin*" -printf '%f\n')
 WEBSERVE_DIR := $(PROJ_DIR)/app
 
 WEBROOT_BUILD_DIR := $(BUILD_DIR)/webroot
@@ -50,12 +54,12 @@ $(BUILD_DIR)/.webroot/lib_stm32flash:
 	@mkdir -p $(@D)
 	touch $@
 
-$(BUILD_DIR)/.webroot/fw_releases: $(REAL_MODELS)
+$(BUILD_DIR)/.webroot/fw_releases:
 	$(shell mkdir -p $(WEBROOT_BUILD_DIR)/fw_releases; \
 	touch $(FW_VERSION_INFO); \
 	echo "[" > $(FW_VERSION_INFO); \
-	for x in $^; do \
-	    cp $(BUILD_DIR)/$${x}/complete.bin $(WEBROOT_BUILD_DIR)/fw_releases/$${x}_release.bin; \
+	for x in $(REAL_MODELS); do \
+	    cp $(OSM_BUILD_DIR)/$${x}/complete.bin $(WEBROOT_BUILD_DIR)/fw_releases/$${x}_release.bin; \
 	    echo "  {\"tag\": \"$(FW_GIT_TAG2)\", \"sha\": \"$(FW_GIT_SHA1)\", \"path\": \"$${x}_release.bin\"}," >> $(FW_VERSION_INFO); \
 	done; \
 	truncate -s -2 $(FW_VERSION_INFO); \
