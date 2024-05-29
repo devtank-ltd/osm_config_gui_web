@@ -1,5 +1,6 @@
 const END_LINE = '}============';
 const START_LINE = '============{';
+const MEAS_FAIL_STR = 'Failed to get measurement reading.';
 
 function on_websocket_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
@@ -293,6 +294,7 @@ export class binding_t {
     async get_measurements() {
         await this.ll.write('measurements');
         const meas = await this.ll.read();
+        console.log(`IN GET MEAS: ${meas}`);
         const measurements = [];
         const meas_split = meas.split('\n\r');
         let start; let end; let regex; let interval; let interval_mins;
@@ -462,7 +464,7 @@ export class binding_t {
 
     async get_value(cmd) {
         const res = await this.do_cmd(cmd);
-        if (!res) {
+        if (!res || res === MEAS_FAIL_STR) {
             return 'n/a';
         }
         if (res.includes(':')) {

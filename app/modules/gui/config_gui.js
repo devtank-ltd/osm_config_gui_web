@@ -25,7 +25,7 @@ class config_gui_t {
 
                 this.port.addEventListener('disconnect', () => {
                     this.port.close();
-                    this.disconnect_modal('OSM disconnected, return to home page');
+                    this.disconnect_modal(text='OSM disconnected, return to home page');
                 });
                 this.port.open({
                     baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
@@ -56,12 +56,12 @@ class config_gui_t {
                     });
                     })
             .catch((e) => {
-                this.disconnect_modal('Could not connect to OSM');
+                this.disconnect_modal(text='Could not connect to OSM');
                 console.log(e);
             });
     }
 
-    async disconnect_modal(text = 'Disconnected') {
+    async disconnect_modal(text='Disconnected') {
         this.dialog = document.getElementById('osm-disconnect-dialog');
         this.dialog_label = document.getElementById('osm-disconnect-dialog-label');
         this.confirm = document.getElementById('osm-disconnect-confirm');
