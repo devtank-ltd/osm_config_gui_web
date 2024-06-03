@@ -102,7 +102,7 @@ export class home_tab_t {
         this.serial_num = await this.dev.serial_number;
         this.sn_input.value = this.serial_num;
         this.sn_input.contentEditable = true;
-        this.sn_input.oninput = (e) => { limit_characters(e, 20); };
+        this.sn_input.oninput = (e) => { limit_characters(e, 50); };
         this.sn_input.addEventListener('focusout', this.change_serial_num);
     }
 
