@@ -2,6 +2,7 @@
     "templates": [
         "countis_e53.json",
         "rayleigh_rif.json",
-        "wt901c-rs485.json"
+        "wt901c-rs485.json",
+        "qm30vt2.json"
     ]
 }

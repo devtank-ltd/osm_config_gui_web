@@ -1,0 +1,147 @@
+{
+    "name": "QM30",
+    "desc": "QM30VT2 Vibration Sensor",
+    "unit_id": "1",
+    "wordorder": "MSW",
+    "byteorder": "MSB",
+    "bits": 8,
+    "parity": "None",
+    "stopbits": 1,
+    "registers": {
+        "ZRVi": {
+            "hex": "0x960",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZRVm": {
+            "hex": "0x962",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "TMPF": {
+            "hex": "0x30",
+            "function": 3,
+            "datatype": "I16"
+        },
+        "TMPC": {
+            "hex": "0x2a",
+            "function": 3,
+            "datatype": "I16"
+        },
+        "XRVi": {
+            "hex": "0x992",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XRVm": {
+            "hex": "0x994",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPAG": {
+            "hex": "0x966",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPAG": {
+            "hex": "0x998",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPVF": {
+            "hex": "0x964",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPVF": {
+            "hex": "0x996",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZRAG": {
+            "hex": "0x965",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XRAG": {
+            "hex": "0x997",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZKRT": {
+            "hex": "0x968",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XKRT": {
+            "hex": "0x99a",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZCF": {
+            "hex": "0x967",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XCF": {
+            "hex": "0x999",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPVi": {
+            "hex": "0x961",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPVm": {
+            "hex": "0x963",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPVi": {
+            "hex": "0x993",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPVm": {
+            "hex": "0x995",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZHRA": {
+            "hex": "0x969",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XHRA": {
+            "hex": "0x99b",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "BAUD": {
+            "hex": "0x17d4",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "PAR": {
+            "hex": "0x17d5",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ADDR": {
+            "hex": "0x17d6",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ROTR": {
+            "hex": "0xa28",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ROTH": {
+            "hex": "0xa29",
+            "function": 3,
+            "datatype": "U16"
+        }
+    }
+}
