@@ -712,6 +712,14 @@ export class wifi_comms_t {
         this.dev.enqueue_and_process(`comms_config mqtt_port ${mqtt_port}`);
     }
 
+    get mqtt_sch() {
+        return this.dev.get_value('comms_config mqtt_sch');
+    }
+
+    set mqtt_sch(mqtt_sch) {
+        this.dev.enqueue_and_process(`comms_config mqtt_sch ${mqtt_sch}`);
+    }
+
     get comms_conn() {
         return this.dev.get_value('comms_conn');
     }
