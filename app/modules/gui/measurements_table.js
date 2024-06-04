@@ -158,7 +158,7 @@ export class measurements_table_t {
         const cell_index = e.srcElement.parentNode.cellIndex;
         const row_index = e.target.parentNode.parentNode.rowIndex;
         const table = e.target.offsetParent.offsetParent;
-        const meas = table.rows[row_index].cells[0].innerHTML;
+        const meas = table.rows[row_index].cells[0].textContent;
         const val_col = table.rows[row_index].cells[cell_index].childNodes[0];
         let val = val_col.value;
         if (val > 999) {
@@ -184,7 +184,7 @@ export class measurements_table_t {
         const btn = e.target;
         const table = btn.offsetParent.offsetParent;
         const row_index = e.srcElement.parentElement.parentNode.rowIndex;
-        const meas = table.rows[row_index].cells[0].innerHTML;
+        const meas = table.rows[row_index].cells[0].textContent;
         const val = await this.dev.get_value(`get_meas ${meas}`);
         const last_val_col = table.rows[row_index].cells[last_val_index];
         last_val_col.textContent = val;
@@ -228,11 +228,11 @@ export class measurements_table_t {
                 seconds = mins * 60;
                 this.is_seconds = true;
                 if (seconds != null) {
-                    imins_header.innerHTML = 'Uplink Time (Seconds)';
+                    imins_header.textContent = 'Uplink Time (Seconds)';
                     msgdiv.textContent = `Minimum uplink time set to ${seconds} seconds`;
                 }
             } else {
-                imins_header.innerHTML = 'Uplink Time (Mins)';
+                imins_header.textContent = 'Uplink Time (Mins)';
                 msgdiv.textContent = `Minimum uplink time set to ${mins} minutes`;
             }
             uplink_input.value = '';

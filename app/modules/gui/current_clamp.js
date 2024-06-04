@@ -281,8 +281,8 @@ export class current_clamp_t {
 
     async set_cc_midpoint(event) {
         await disable_interaction(true);
-        this.mpphase = event.target.parentElement.cells[0].innerHTML;
-        this.mp_val = event.target.innerHTML;
+        this.mpphase = event.target.parentElement.cells[0].textContent;
+        this.mp_val = event.target.textContent;
         this.dev.update_midpoint(this.mp_val, this.mpphase);
         await disable_interaction(false);
     }

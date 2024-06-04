@@ -93,12 +93,12 @@ export class wifi_config_t {
         await disable_interaction(true);
         const wifimsg = document.getElementById('wifi-msg-div');
         wifimsg.textContent = '';
-        const ssid = document.getElementById('wifi-ssid-value').innerHTML;
-        const wifi_pwd = document.getElementById('wifi-pwd-value').innerHTML;
-        const mqtt_addr = document.getElementById('wifi-mqtt-addr-value').innerHTML;
-        const mqtt_user = document.getElementById('wifi-mqtt-user-value').innerHTML;
-        const mqtt_pwd = document.getElementById('wifi-mqtt-pwd-value').innerHTML;
-        const mqtt_port = document.getElementById('wifi-mqtt-port-value').innerHTML;
+        const ssid = document.getElementById('wifi-ssid-value').textContent;
+        const wifi_pwd = document.getElementById('wifi-pwd-value').textContent;
+        const mqtt_addr = document.getElementById('wifi-mqtt-addr-value').textContent;
+        const mqtt_user = document.getElementById('wifi-mqtt-user-value').textContent;
+        const mqtt_pwd = document.getElementById('wifi-mqtt-pwd-value').textContent;
+        const mqtt_port = document.getElementById('wifi-mqtt-port-value').textContent;
 
         this.comms.wifi_ssid = ssid;
         this.comms.wifi_pwd = wifi_pwd;
@@ -106,7 +106,7 @@ export class wifi_config_t {
         this.comms.mqtt_user = mqtt_user;
         this.comms.mqtt_pwd = mqtt_pwd;
         this.comms.mqtt_port = mqtt_port;
-        this.comms.mqtt_ca = 'a'; /* Current firmware doesn't allow CA to be an empty string */
+        this.comms.mqtt_ca = 'none'; /* Current firmware doesn't allow CA to be an empty string */
 
         wifimsg.textContent = 'Configuration sent.';
         await disable_interaction(false);

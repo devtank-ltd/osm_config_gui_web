@@ -67,10 +67,10 @@ export class lora_config_t {
                 td.id = 'lora-app-key-value';
             } else if (i === 'Region') {
                 const td = r.insertCell();
-                td.innerHTML = region_dropdwn;
+                td.textContent = region_dropdwn;
                 const sel = document.getElementById('lora-config-region-dropdown');
                 for (let v = 0; v < sel.length; v += 1) {
-                    if (region.includes(sel[v].innerHTML)) {
+                    if (region.includes(sel[v].textContent)) {
                         sel.selectedIndex = v;
                     }
                 }
@@ -101,8 +101,8 @@ export class lora_config_t {
         loader.style.display = 'block';
         const loramsg = document.getElementById('lora-msg-div');
         loramsg.textContent = '';
-        const deveui = document.getElementById('lora-dev-eui-value').innerHTML;
-        const appkey = document.getElementById('lora-app-key-value').innerHTML;
+        const deveui = document.getElementById('lora-dev-eui-value').textContent;
+        const appkey = document.getElementById('lora-app-key-value').textContent;
         const reg = document.getElementById('lora-config-region-dropdown').value.split(' ')[0];
 
         this.comms.lora_deveui = deveui;
