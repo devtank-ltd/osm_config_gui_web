@@ -89,10 +89,7 @@ class flash_controller_base_t {
                 })
                 .then(() => stm_api.disconnect())
                 .then(() => {
-                    this.port.open({
-                        baudRate: this.baudrate, databits: 8, stopbits: 1, parity: 'none',
-                    });
-                    disable_interaction(false);
+                    window.location.reload();
                 })
                 .catch(async () => {
                     errlabel.style.display = 'block';
