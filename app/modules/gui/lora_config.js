@@ -67,7 +67,7 @@ export class lora_config_t {
                 td.id = 'lora-app-key-value';
             } else if (i === 'Region') {
                 const td = r.insertCell();
-                td.textContent = region_dropdwn;
+                td.innerHTML = region_dropdwn;
                 const sel = document.getElementById('lora-config-region-dropdown');
                 for (let v = 0; v < sel.length; v += 1) {
                     if (region.includes(sel[v].textContent)) {
