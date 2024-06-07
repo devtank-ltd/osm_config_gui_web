@@ -255,6 +255,7 @@ export class binding_t {
         }
         await this.ll.write(cmd);
         const output = await this.ll.read();
+        console.log(output);
         const parsed = await this.parse_msg(output);
         return parsed;
     }
@@ -711,6 +712,14 @@ export class wifi_comms_t {
 
     set mqtt_ca(mqtt_ca) {
         this.dev.enqueue_and_process(`comms_config mqtt_ca ${mqtt_ca}`);
+    }
+
+    get mqtt_path() {
+        return this.dev.get_value('comms_config mqtt_path');
+    }
+
+    set mqtt_path(mqtt_path) {
+        this.dev.enqueue_and_process(`comms_config mqtt_path ${mqtt_path}`);
     }
 
     get mqtt_port() {
