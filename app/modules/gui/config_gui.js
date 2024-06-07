@@ -36,6 +36,7 @@ class config_gui_t {
                         this.dev = new binding_t(this.port, type);
                         this.writer = await this.dev.open_ll_obj();
                         if (this.writer) {
+                            await this.dev.do_cmd('version');
                             this.home = new home_tab_t(this.dev, false);
                             await this.home.create_navbar();
                             await this.home.insert_homepage();
