@@ -21,6 +21,7 @@ export class home_tab_t {
         this.insert_homepage = this.insert_homepage.bind(this);
         this.return_to_home_tab = this.return_to_home_tab.bind(this);
         this.save_settings = this.save_settings.bind(this);
+        this.change_name = this.change_name.bind(this);
         this.hide_img();
     }
 
@@ -82,6 +83,7 @@ export class home_tab_t {
             await wifi.add_listeners();
         }
 
+        await this.load_name();
         await this.load_serial_number();
 
         const load_config = new load_configuration_t(this.dev, this.comms);
@@ -93,6 +95,21 @@ export class home_tab_t {
         await this.add_event_listeners();
         await disable_interaction(false);
         loader.style.display = 'none';
+    }
+
+
+    async load_name() {
+        this.name_input = document.getElementById('name-input');
+        const name = await this.dev.name;
+        this.name_input.value = name;
+        this.name_input.contentEditable = true;
+        this.name_input.oninput = (e) => { limit_characters(e, 50); };
+        this.name_input.addEventListener('focusout', this.change_name);
+    }
+
+    async change_name(e) {
+        const val = e.target.value;
+        this.dev.name = val;
     }
 
     async load_serial_number() {

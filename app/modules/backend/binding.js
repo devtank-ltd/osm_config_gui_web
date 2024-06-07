@@ -457,6 +457,14 @@ export class binding_t {
         return match;
     }
 
+    get name() {
+        return this.get_value('name');
+    }
+
+    set name(value) {
+        this.enqueue_and_process(`name ${value}`);
+    }
+
     get interval_mins() {
         return this.extract_interval_mins();
     }
