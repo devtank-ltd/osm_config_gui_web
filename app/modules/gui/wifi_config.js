@@ -101,10 +101,10 @@ export class wifi_config_t {
         const mqtt_port = document.getElementById('wifi-mqtt-port-value').textContent;
 
         this.comms.wifi_ssid = ssid;
-        this.comms.wifi_pwd = wifi_pwd;
+        this.comms.wifi_pwd = wifi_pwd.replace(/([^\\]),/g, '$1\\,');; /* Insert backslash behind comma unless one already exists */
         this.comms.mqtt_addr = mqtt_addr;
         this.comms.mqtt_user = mqtt_user;
-        this.comms.mqtt_pwd = mqtt_pwd;
+        this.comms.mqtt_pwd = mqtt_pwd.replace(/([^\\]),/g, '$1\\,');;
         this.comms.mqtt_port = mqtt_port;
         this.comms.mqtt_ca = 'none'; /* Current firmware doesn't allow CA to be an empty string */
 

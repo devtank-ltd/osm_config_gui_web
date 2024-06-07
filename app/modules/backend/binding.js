@@ -569,10 +569,19 @@ export class binding_t {
 
     async comms_type() {
         const comms_config = await this.do_cmd('j_comms_cfg');
-        const json_config = JSON.parse(comms_config);
+        const comms_formatted = await this.insert_backslash(comms_config)
+        const json_config = JSON.parse(comms_formatted);
         const type = await json_config.type;
         return type;
     }
+
+    async insert_backslash(obj) {
+        if (typeof obj === 'string') {
+            return obj.replace(/\\/g, '\\\\');
+        }
+        return obj;
+    }
+
 
     async get_io_types() {
         const measurements = await this.get_measurements();
