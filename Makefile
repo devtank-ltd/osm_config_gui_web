@@ -36,7 +36,7 @@ webroot: $(WEBROOT_BUILD_DIR)/index.html $(WEBROOT_BUILD_DIR)/favicon.ico $(WEBS
 
 webhost: webroot
 	cd $(BUILD_DIR); \
-	python3 ./aioserver.py -v
+	python3 ./aioserver.py
 
 $(WEBROOT_BUILD_DIR)/%: $(WEBSERVE_DIR)/%
 	@mkdir -p $(@D)
