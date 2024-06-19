@@ -251,7 +251,7 @@ export class firmware_t {
         fetch('../../fw_releases/latest_fw_info.json')
             .then((resp) => resp.json())
             .then((json) => {
-                const fw_entry = json.find((element) => element.path === `${model}_release.bin`);
+                const fw_entry = json.find((element) => element.path.startsWith(`${model}_release`) && element.path.endsWith('.bin'));
                 if (!fw_entry) return;
                 this.create_firmware_table(fw_entry);
             })
