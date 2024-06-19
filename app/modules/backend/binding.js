@@ -100,7 +100,6 @@ class low_level_serial_t {
                 const msg = decoder.decode(value);
                 msgs += msg;
                 if (msgs.includes(end_line)) {
-                    msgs = msgs.replace(end_line, '');
                     break;
                 }
             }
@@ -163,6 +162,7 @@ export class binding_t {
         this.queue = [];
         this.call_queue();
         this._in_comms_direct = false;
+        this._leftovers = '';
     }
 
     async open_ll_obj() {
@@ -223,13 +223,32 @@ export class binding_t {
             return '';
         }
         this.msgs = [];
-        const spl = msg.split('\n\r');
-        spl.forEach((s, i) => {
-            if (s === START_LINE) {
-                console.log('Found start line');
-            } else if (s === END_LINE) {
-                console.log('Found end line');
-            } else if (s.includes('DEBUG') || s.includes('ERROR')) {
+        const full_msg = this._leftovers + msg;
+        const spl = full_msg.split('\n\r');
+        let start_index = spl.findIndex((s) => START_LINE === s);
+        if (0 > start_index) {
+            // If no start line is found, assume we missed it
+            console.log('No start line is found');
+            start_index = 0;
+        } else {
+            // We dont actually want to read the start line
+            start_index += 1;
+        }
+        let end_index = spl.findIndex((s) => END_LINE === s);
+        if (0 > end_index) {
+            // If no end line is found, assume it hasn't happened yet
+            console.log('No end line is found');
+            end_index = spl.length;
+            this._leftovers = '';
+        } else {
+            // If end line is found, prepare everything after it to be
+            // a leftover
+            const leftover_arr = spl.slice(end_index + 2)
+            this._leftovers = leftover_arr.join('\n\r');
+        }
+        const spl2 = spl.slice(start_index, end_index);
+        spl2.forEach((s, i) => {
+            if (s.includes('DEBUG') || s.includes('ERROR')) {
                 console.log('Found debug line');
             } else {
                 this.msgs.push(s);
