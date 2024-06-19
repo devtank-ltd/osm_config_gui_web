@@ -44,19 +44,14 @@ class virtual_osm:
         rstr = self._random_str()
         self.loc = f"/tmp/osm_{rstr}/"
 
-        linux_osm = 0
+        linux_elf = f"{PATH}/firmware.elf"
 
-        osm_bin_exists = self._find_linux_binary()
-        if not osm_bin_exists:
-            self._logger.debug("Generating linux binary")
-            linux_osm = self._generate_linux_binary()
-
-        if linux_osm == 0:
-            cmd = [f"DEBUG=1 OSM_LOC={self.loc} USE_PORT={self.port} {PATH}/../osm_firmware/build/penguin/firmware.elf"]
+        if os.path.exists(linux_elf):
+            cmd = [f"DEBUG=1 OSM_LOC={self.loc} USE_PORT={self.port} {linux_elf}"]
             self._spawn_virtual_osm(cmd, self.port)
             time.sleep(2)
         else:
-            self._logger.debug("Virtual OSM could not be generated.")
+            self._logger.debug("Virtual OSM could not be found.")
 
         return self.port
 
@@ -70,20 +65,6 @@ class virtual_osm:
         self.vosm_subp = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         all_processes[port] = self.vosm_subp
         return self.vosm_subp
-
-    @staticmethod
-    def _find_linux_binary():
-        output = f"{PATH}/../osm_firmware/build/penguin/firmware.elf"
-        try:
-            sub = subprocess.check_output(f"ls {output}", shell=True)
-            return True
-        except:
-            return False
-
-    @staticmethod
-    def _generate_linux_binary():
-        sub = subprocess.run(f"cd {PATH}/../osm_firmware && make penguin && cd -", stdout=subprocess.PIPE, shell=True)
-        return sub.returncode
 
 
 class osm_tcp_client:

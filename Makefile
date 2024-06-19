@@ -11,7 +11,7 @@ WEBSERVE_DIR := $(PROJ_DIR)/app
 WEBROOT_BUILD_DIR := $(BUILD_DIR)/webroot
 WEBROOT_LIB_BUILD_DIR := $(WEBROOT_BUILD_DIR)/libs
 
-all: webroot
+all: webroot $(BUILD_DIR)/firmware.elf
 
 define WEBSERVE_BUILT_FILES
 $(1)_SRC := $(shell find $(2) -type f)
@@ -72,6 +72,11 @@ $(BUILD_DIR)/.webroot/fw_releases:
 dev_fw: $(WEBROOT_BUILD_DIR)/fw_releases
 	cp $(PROJ_DIR)/fw_releases/* $(WEBROOT_BUILD_DIR)/fw_releases/
 
+
+$(BUILD_DIR)/firmware.elf:
+	$(MAKE) -C osm_firmware penguin_at_wifi
+	cp osm_firmware/build/penguin_at_wifi/firmware.elf $(BUILD_DIR)/firmware.elf
+	cp -r osm_firmware/build/penguin_at_wifi/peripherals $(BUILD_DIR)/peripherals
 
 clean:
 	rm -rf $(BUILD_DIR)
