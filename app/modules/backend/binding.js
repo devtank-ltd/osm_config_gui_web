@@ -224,8 +224,8 @@ export class binding_t {
         }
         this.msgs = [];
         const full_msg = this._leftovers + msg;
-        const spl = full_msg.split('\n\r');
-        let start_index = spl.findIndex((s) => START_LINE === s);
+        const spl = full_msg.split('\r');
+        let start_index = spl.findIndex((s) => START_LINE + '\n' === s);
         if (start_index < 0) {
             // If no start line is found, assume we missed it
             console.log('No start line is found');
@@ -234,7 +234,7 @@ export class binding_t {
             // We dont actually want to read the start line
             start_index += 1;
         }
-        let end_index = spl.findIndex((s) => END_LINE === s);
+        let end_index = spl.findIndex((s) => END_LINE + '\n' === s);
         if (end_index < 0) {
             // If no end line is found, assume it hasn't happened yet
             console.log('No end line is found');
@@ -244,7 +244,7 @@ export class binding_t {
             // If end line is found, prepare everything after it to be
             // a leftover
             const leftover_arr = spl.slice(end_index + 2);
-            this._leftovers = leftover_arr.join('\n\r');
+            this._leftovers = leftover_arr.join('\r');
         }
         const spl2 = spl.slice(start_index, end_index);
         spl2.forEach((s, i) => {
