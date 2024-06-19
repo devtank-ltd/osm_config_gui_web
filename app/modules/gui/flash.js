@@ -252,7 +252,11 @@ export class firmware_t {
             .then((resp) => resp.json())
             .then((json) => {
                 const fw_entry = json.find((element) => element.path.startsWith(`${model}_release`) && element.path.endsWith('.bin'));
-                if (!fw_entry) return;
+                if (!fw_entry) {
+                    console.log(`No fw entry for model ${model}`);
+                    return;
+                }
+                console.log(`FW entry for model ${model}`);
                 this.create_firmware_table(fw_entry);
             })
             .catch((err) => {
