@@ -11,6 +11,8 @@ WEBSERVE_DIR := $(PROJ_DIR)/app
 WEBROOT_BUILD_DIR := $(BUILD_DIR)/webroot
 WEBROOT_LIB_BUILD_DIR := $(WEBROOT_BUILD_DIR)/libs
 
+all: webroot
+
 define WEBSERVE_BUILT_FILES
 $(1)_SRC := $(shell find $(2) -type f)
 $(1) := $$(patsubst $$(WEBSERVE_DIR)/%,$$(WEBROOT_BUILD_DIR)/%,$$($(1)_SRC))
