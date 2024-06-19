@@ -57,15 +57,8 @@ $(BUILD_DIR)/.webroot/lib_stm32flash:
 	touch $@
 
 $(BUILD_DIR)/.webroot/fw_releases:
-	$(shell mkdir -p $(WEBROOT_BUILD_DIR)/fw_releases; \
-	touch $(FW_VERSION_INFO); \
-	echo "[" > $(FW_VERSION_INFO); \
-	for x in $(REAL_MODELS); do \
-	    cp $(OSM_BUILD_DIR)/$${x}/complete.bin $(WEBROOT_BUILD_DIR)/fw_releases/$${x}_release.bin; \
-	    echo "  {\"tag\": \"$(FW_GIT_TAG2)\", \"sha\": \"$(FW_GIT_SHA1)\", \"path\": \"$${x}_release.bin\"}," >> $(FW_VERSION_INFO); \
-	done; \
-	truncate -s -2 $(FW_VERSION_INFO); \
-	echo "\n]" >> $(FW_VERSION_INFO);)
+	$(shell mkdir -p $(WEBROOT_BUILD_DIR)/fw_releases)
+	touch $(FW_VERSION_INFO)
 	@mkdir -p $(@D)
 	touch $@
 
