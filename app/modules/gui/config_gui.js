@@ -37,8 +37,7 @@ class config_gui_t {
                 })
                     .then(async () => {
                         /* If user is on Windows or Mac we must control handshaking lines */
-                        if (navigator.platform === "Win32" || navigator.platform === "MacIntel")
-                        {
+                        if (navigator.platform === "Win32" || navigator.platform === "MacIntel") {
                             options.dataTerminalReady = PIN_LOW;
                             options.requestToSend = PIN_LOW;
                             await this.port.setSignals(options);
@@ -76,6 +75,7 @@ class config_gui_t {
                     });
                     })
             .catch((e) => {
+                this.disconnect_modal(text='Could not connect to OSM');
                 console.log(e);
             });
     }
