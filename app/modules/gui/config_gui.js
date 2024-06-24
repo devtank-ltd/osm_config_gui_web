@@ -2,6 +2,10 @@ import { binding_t } from '../backend/binding.js';
 import { home_tab_t } from './home.js';
 import { disable_interaction } from './disable.js';
 
+const PIN_HIGH = false;
+const PIN_LOW = true;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 class config_gui_t {
     constructor() {
         this.spin_fake_osm = this.spin_fake_osm.bind(this);
@@ -27,9 +31,24 @@ class config_gui_t {
                     this.port.close();
                     this.disconnect_modal(text='OSM disconnected, return to home page');
                 });
+                const options = {};
                 this.port.open({
                     baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
                 })
+                    .then(async () => {
+                        /* If user is on Windows or Mac we must control handshaking lines */
+                        if (navigator.platform === "Win32" || navigator.platform === "MacIntel")
+                        {
+                            options.dataTerminalReady = PIN_LOW;
+                            options.requestToSend = PIN_LOW;
+                            await this.port.setSignals(options);
+                            await sleep(100);
+                            options.dataTerminalReady = PIN_HIGH;
+                            options.requestToSend = PIN_HIGH;
+                            await this.port.setSignals(options);
+                            await sleep(100);
+                        }
+                    })
                     .then(async () => {
                         const loader = document.getElementById('loader');
                         loader.style.display = 'block';
@@ -57,7 +76,6 @@ class config_gui_t {
                     });
                     })
             .catch((e) => {
-                this.disconnect_modal(text='Could not connect to OSM');
                 console.log(e);
             });
     }
