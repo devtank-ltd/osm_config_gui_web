@@ -2,10 +2,6 @@ PROJ_DIR ?= .
 BUILD_DIR ?= $(PROJ_DIR)/build
 OSM_DIR ?= $(PROJ_DIR)/osm_firmware
 OSM_BUILD_DIR ?= $(OSM_DIR)/build
-MODEL_DIR ?= $(OSM_DIR)/model
-FW_GIT_TAG2 := $(shell cd $(OSM_DIR) && git describe --tags --abbrev=0 --dirty)
-FW_GIT_SHA1 := $(shell cd $(OSM_DIR) && printf "%.*s\n" 7 $$(git log -n 1 --format="%H"))
-REAL_MODELS = $(shell find $(MODEL_DIR)/* -maxdepth 0 -type d ! -name "*penguin*" -printf '%f\n')
 WEBSERVE_DIR := $(PROJ_DIR)/app
 
 WEBROOT_BUILD_DIR := $(BUILD_DIR)/webroot
@@ -67,9 +63,9 @@ dev_fw: $(WEBROOT_BUILD_DIR)/fw_releases
 
 
 $(BUILD_DIR)/firmware.elf:
-	$(MAKE) -C osm_firmware penguin_at_wifi
-	cp osm_firmware/build/penguin_at_wifi/firmware.elf $(BUILD_DIR)/firmware.elf
-	cp -r osm_firmware/build/penguin_at_wifi/peripherals $(BUILD_DIR)/peripherals
+	$(MAKE) -C $(OSM_DIR) penguin_at_wifi
+	cp $(OSM_BUILD_DIR)/penguin_at_wifi/firmware.elf $(BUILD_DIR)/firmware.elf
+	cp -r $(OSM_BUILD_DIR)/penguin_at_wifi/peripherals $(BUILD_DIR)/peripherals
 
 clean:
 	rm -rf $(BUILD_DIR)
