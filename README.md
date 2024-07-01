@@ -2,32 +2,22 @@
 
 Use this application to open a GUI to enable you to configure an OSM with various settings.
 
+This project uses osm\_firmware as a submodule, so you may need to enter the following:
+
+    git submodule update --init --recursive
+
+There may be packages to install for that repository, check the docs in there for getting started with OSM firmware.
+
 ## Run Application
 
-The main page to connect to the gui is found in app/config_gui.html.
 
-Open this in a local web server to run the application, there are several ways to do this
-including installing a Live Server extension in VSCode.
+At the top level directory of the application, enter the following:
 
-Other ways include:
-1. Installing nodejs `sudo apt install nodejs`
+    make webhost
 
-2. Navigate to the location of `config_gui.html`
+This will bundle the files required by the application into 'build' and start a web server on localhost:8000
 
-3. Run a http server with `npm install http-server -g`
-
-4. Go to localhost:8080 in a Webkit based browser.
-
-You can also use Python to run a simple http server with:
-
-1. On terminal
-2. Navigate to the location of `config_gui.html`
-3. Doing:
-  python -m http.server
-4. Go to localhost:8000 in a Webkit based browser.
-
-
-Once you have reached the home page, connect an OSM via micro USB, press connect and select the device.
+Go to this url in your browser to start using the GUI.
 
 ## File Structure
 
