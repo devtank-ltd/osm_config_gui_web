@@ -38,7 +38,7 @@ class config_gui_t {
                     .then(async () => {
                         /* If user is on Windows or Mac we must control handshaking lines */
                         if (navigator.platform === "Win32" || navigator.platform === "MacIntel") {
-                            options.dataTerminalReady = PIN_LOW;
+                            options.dataTerminalReady = PIN_HIGH;
                             options.requestToSend = PIN_LOW;
                             await this.port.setSignals(options);
                             await sleep(100);
@@ -54,6 +54,7 @@ class config_gui_t {
                         this.dev = new binding_t(this.port, type);
                         this.writer = await this.dev.open_ll_obj();
                         if (this.writer) {
+                            await this.dev.ll.read_raw();
                             await this.dev.do_cmd('version');
                             this.home = new home_tab_t(this.dev, false);
                             await this.home.create_navbar();
