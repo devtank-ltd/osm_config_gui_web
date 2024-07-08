@@ -62,13 +62,15 @@ export class home_tab_t {
         if (!this.is_virtual) {
             const fw_table = new firmware_t(this.dev);
             const model = this.fw_ver.split('-[')[0];
-            fw_table.get_latest_firmware_info(model);
-            const comms_fw = new rak3172_firmware_t(this.dev);
-            comms_fw.add_comms_btn_listener();
+            const info = await fw_table.get_latest_firmware_info(model);
+            if (info) {
+                const comms_fw = new rak3172_firmware_t(this.dev);
+                comms_fw.add_comms_btn_listener();
+            }
         }
 
         const comms_type = await this.dev.comms_type();
-        if (comms_type.includes('LW')) {
+        if (comms_type && comms_type.includes('LW')) {
             this.comms = new lora_comms_t(this.dev);
             const lora = new lora_config_t(this.comms);
             await lora.populate_lora_fields();
@@ -76,11 +78,15 @@ export class home_tab_t {
             const fw_table = document.getElementById('home-firmware-div');
             fw_table.style.gridColumnStart = 2;
             fw_table.style.gridColumnEnd = 3;
-        } else if (comms_type.includes('WIFI')) {
+        } else if (comms_type && comms_type.includes('WIFI')) {
             this.comms = new wifi_comms_t(this.dev);
             const wifi = new wifi_config_t(this.comms);
             await wifi.populate_wifi_fields();
             await wifi.add_listeners();
+        } else if (!comms_type) {
+            const lora_table = document.getElementById('lora-config-table');
+            lora_table.style.display = 'block';
+            lora_table.textContent = 'Could not get comms config.';
         }
 
         await this.load_name();
