@@ -1,5 +1,6 @@
 import { STMApi } from '../../libs/stm-serial-flasher/api/STMapi.js';
 import logger from '../../libs/stm-serial-flasher/api/Logger.js';
+import tools from '../../libs/stm-serial-flasher/tools.js';
 import { move_bar } from './progressbar.js';
 
 const PIN_HIGH = false;
@@ -8,6 +9,9 @@ const PIN_LOW = true;
 const SYNCHR = 0x7F;
 const ACK = 0x79;
 const NACK = 0x1F;
+const CMD_GET = 0x00;
+const CMD_GID = 0x02;
+const MAX_WRITE_BLOCK_SIZE_STM32 = 256;
 
 function u8a(array) {
     return new Uint8Array(array);
@@ -21,6 +25,19 @@ const EwrLoadState = Object.freeze({
     LOADED: Symbol('loaded'),
 });
 
+class InfoGET {
+    constructor() {
+        // Bootloader version
+        this.blVersion = null;
+        // List of supported commands
+        this.commands = [];
+    }
+
+    getFamily() {
+        return this.commands.indexOf(CMD_GID) === -1 ? 'STM8' : 'STM32';
+    }
+}
+
 export class osm_flash_api_t extends STMApi {
     constructor(port, params) {
         super(port);
@@ -30,6 +47,91 @@ export class osm_flash_api_t extends STMApi {
                 baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
             };
     }
+
+    /**
+     * Executes GET command
+     * @returns {Promise<InfoGET>}
+     */
+    async cmdGET() {
+        return new Promise((resolve, reject) => {
+            if (!this.serial.isOpen()) {
+                reject(new Error('Connection must be established before sending commands'));
+                return;
+            }
+
+            this.serial.write(u8a([CMD_GET, 0xFF ^ CMD_GET]))
+                .then(() => sleep(100)) /* Slow machines require a delay to gather full response */
+                .then(() => this.readResponse())
+                .then(async (resp) => {
+                    let response = Array.from(resp);
+                    if (response[0] !== ACK) {
+                        throw new Error('Unexpected response');
+                    }
+
+                    if (response.length === 1) { // TODO stm8 sends the bytes with delay. Always or on in reply mode only?
+                        let res = await this.readResponse();
+                        response[1] = res[0];
+                        res = await this.readResponse(); // bl version
+                        response[2] = res[0];
+                        for (let i = 0; i <= response[1]; i++) {
+                            res = await this.readResponse();
+                            response[3 + i] = res[0];
+                        }
+                    }
+
+                    let info = new InfoGET();
+                    info.blVersion = (response[2] >> 4) + '.' + (response[2] & 0x0F);
+                    for (let i = 0; i < response[1]; i++) {
+                        info.commands.push(response[3 + i]);
+                    }
+                    this.commands = info.commands;
+                    if (info.getFamily() === 'STM32') {
+                        this.writeBlockSize = MAX_WRITE_BLOCK_SIZE_STM32;
+                        this.ewrLoadState = EwrLoadState.LOADED;
+                    } else {
+                        this.writeBlockSize = MAX_WRITE_BLOCK_SIZE_STM8;
+                    }
+                    resolve(info);
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
+     * Execute Get ID command
+     * STM32 only
+     */
+    async cmdGID() {
+        return new Promise((resolve, reject) => {
+            if (!this.commands.length) {
+                reject(new Error('Execute GET command first'));
+                return;
+            }
+
+            if (this.commands.indexOf(CMD_GID) === -1) {
+                reject(new Error('GET ID command is not supported by the current target'));
+                return;
+            }
+
+            if (!this.serial.isOpen()) {
+                reject(new Error('Connection must be established before sending commands'));
+                return;
+            }
+
+            this.serial.write(u8a([CMD_GID, 0xFF ^ CMD_GID]))
+                .then(() => sleep(100)) /* Slow machines require a delay to gather full response */
+                .then(() => this.readResponse())
+                .then(response => {
+                    if (response[0] !== ACK) {
+                        throw new Error('Unexpected response');
+                    }
+                    let pid = '0x' + tools.b2hexstr(response[2]) + tools.b2hexstr(response[3]);
+                    resolve(pid);
+                })
+                .catch(reject);
+        });
+    }
+
     /**
      * Connect to the target by resetting it and activating the ROM bootloader
      * @param {object} params
@@ -99,9 +201,12 @@ export class osm_flash_api_t extends STMApi {
             const signal = {};
             this.serial.open(open_params)
                 .then(() => {
+                    if (navigator.platform === "Linux armv81" || navigator.platform === "Linux x86_64") {
                     signal.dataTerminalReady = PIN_HIGH;
                     signal.requestToSend = PIN_HIGH;
                     return this.serial.control(signal);
+                    }
+                    console.log(`Running on ${navigator.platform}`);
                 })
                 .then(() => this.activateBootloader())
                 .then(resolve)
