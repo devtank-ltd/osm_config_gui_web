@@ -234,7 +234,7 @@ export class binding_t {
             // We dont actually want to read the start line
             start_index += 1;
         }
-        let end_index = spl.findIndex((s) => END_LINE + '\n' === s);
+        let end_index = spl.findIndex((s) => END_LINE + '\n' === s || END_LINE === s);
         if (end_index < 0) {
             // If no end line is found, assume it hasn't happened yet
             console.log('No end line is found');
@@ -274,7 +274,6 @@ export class binding_t {
         }
         await this.ll.write(cmd);
         const output = await this.ll.read();
-        console.log(output);
         const parsed = await this.parse_msg(output);
         return parsed;
     }
@@ -597,10 +596,16 @@ export class binding_t {
 
     async comms_type() {
         const comms_config = await this.do_cmd('j_comms_cfg');
-        const comms_formatted = await this.insert_backslash(comms_config)
-        const json_config = JSON.parse(comms_formatted);
-        const type = await json_config.type;
-        return type;
+        const comms_formatted = await this.insert_backslash(comms_config);
+        try {
+            const json_config = JSON.parse(comms_formatted);
+            const type = await json_config.type;
+            return type;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 
     async insert_backslash(obj) {

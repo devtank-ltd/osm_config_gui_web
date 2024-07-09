@@ -247,21 +247,22 @@ export class firmware_t {
         await disable_interaction(false);
     }
 
-    get_latest_firmware_info(model) {
-        fetch('../../fw_releases/latest_fw_info.json')
-            .then((resp) => resp.json())
-            .then((json) => {
-                const fw_entry = json.find((element) => element.path.startsWith(`${model}_release`) && element.path.endsWith('.bin'));
-                if (!fw_entry) {
-                    console.log(`No fw entry for model ${model}`);
-                    return;
-                }
-                console.log(`FW entry for model ${model}`);
-                this.create_firmware_table(fw_entry);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+    async get_latest_firmware_info(model) {
+        try {
+            const j = await fetch('../../fw_releases/latest_fw_info.json');
+            const resp = await j.json();
+            const fw_entry = resp.find((element) => element.path.startsWith(`${model}_release`) && element.path.endsWith('.bin'));
+            if (!fw_entry) {
+                console.log(`No fw entry for model ${model}`);
+            }
+            console.log(`FW entry for model ${model}`);
+            await this.create_firmware_table(fw_entry);
+            return true;
+        }
+        catch (e) {
+            console.log(e);
+            return false;
+        }
     }
 
     flash_latest(fw_info) {
