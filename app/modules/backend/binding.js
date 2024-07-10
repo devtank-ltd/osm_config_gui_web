@@ -406,10 +406,10 @@ export class binding_t {
 
     async set_cc_type(phase, type_) {
         let unit;
-        if (type_ === 'mV') {
+        if (type_ === 'mV' || type_ === 'V') {
             unit = 'V';
         }
-        else if (type_ === 'mA') {
+        else if (type_ === 'mA' || type_ === 'A') {
             unit = 'A';
         }
         else {
@@ -434,8 +434,8 @@ export class binding_t {
         return gain;
     }
 
-    async set_cc_gain(phase, ext, int) {
-        await this.do_cmd(`cc_gain ${phase} ${ext} ${int}`);
+    async set_cc_gain(phase, input, output) {
+        await this.do_cmd(`cc_gain ${phase} ${input} ${output}`);
     }
 
     async get_cc_mp(phase) {
