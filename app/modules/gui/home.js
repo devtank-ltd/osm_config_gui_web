@@ -103,7 +103,6 @@ export class home_tab_t {
         loader.style.display = 'none';
     }
 
-
     async load_name() {
         this.name_input = document.getElementById('name-input');
         const name = await this.dev.name;

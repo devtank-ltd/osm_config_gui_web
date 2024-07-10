@@ -225,7 +225,7 @@ export class binding_t {
         this.msgs = [];
         const full_msg = this._leftovers + msg;
         const spl = full_msg.split('\r');
-        let start_index = spl.findIndex((s) => START_LINE + '\n' === s);
+        let start_index = spl.findIndex((s) => `${START_LINE}\n` === s);
         if (start_index < 0) {
             // If no start line is found, assume we missed it
             console.log('No start line is found');
@@ -234,7 +234,7 @@ export class binding_t {
             // We dont actually want to read the start line
             start_index += 1;
         }
-        let end_index = spl.findIndex((s) => END_LINE + '\n' === s || END_LINE === s);
+        let end_index = spl.findIndex((s) => `${END_LINE}\n` === s || END_LINE === s);
         if (end_index < 0) {
             // If no end line is found, assume it hasn't happened yet
             console.log('No end line is found');
@@ -406,13 +406,11 @@ export class binding_t {
 
     async set_cc_type(phase, type_) {
         let unit;
-        if (type_ === 'mV') {
+        if (type_ === 'mV' || type_ === 'V') {
             unit = 'V';
-        }
-        else if (type_ === 'mA') {
+        } else if (type_ === 'mA' || type_ === 'A') {
             unit = 'A';
-        }
-        else {
+        } else {
             console.log('Invalid type');
             return;
         }
@@ -434,8 +432,8 @@ export class binding_t {
         return gain;
     }
 
-    async set_cc_gain(phase, ext, int) {
-        await this.do_cmd(`cc_gain ${phase} ${ext} ${int}`);
+    async set_cc_gain(phase, input, output) {
+        await this.do_cmd(`cc_gain ${phase} ${input} ${output}`);
     }
 
     async get_cc_mp(phase) {
@@ -601,20 +599,19 @@ export class binding_t {
             const json_config = JSON.parse(comms_formatted);
             const type = await json_config.type;
             return type;
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             return null;
         }
     }
 
     async insert_backslash(obj) {
-        if (typeof obj === 'string') {
-            return obj.replace(/\\/g, '\\\\');
+        this.obj = obj;
+        if (typeof this.obj === 'string') {
+            return this.obj.replace(/\\/g, '\\\\');
         }
-        return obj;
+        return this.obj;
     }
-
 
     async get_io_types() {
         const measurements = await this.get_measurements();
@@ -624,7 +621,7 @@ export class binding_t {
             this.ftma_types = await this.do_cmd(`get_meas_type ${meas}`);
             const s = this.ftma_types.split(': ');
             const io = s[0].replace(START_LINE, '');
-            if (s[1] === 'IO_READING' || s[1] === 'PULSE_COUNT' || s[1] === 'W1_PROBE') {
+            if (s[1] === 'IO_READING\n' || s[1] === 'PULSE_COUNT\n' || s[1] === 'W1_PROBE\n') {
                 io_list.push(io);
             }
         }

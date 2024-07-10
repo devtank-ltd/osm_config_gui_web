@@ -24,10 +24,25 @@ export class save_configuration_t {
             interval_mins: null,
             comms: {},
             ios: {},
-            cc_midpoints: {
-                CC1: null,
-                CC2: null,
-                CC3: null,
+            cts: {
+                CC1: {
+                    midpoint: null,
+                    type: null,
+                    input: null,
+                    output: null,
+                },
+                CC2: {
+                    midpoint: null,
+                    type: null,
+                    input: null,
+                    output: null,
+                },
+                CC3: {
+                    midpoint: null,
+                    type: null,
+                    input: null,
+                    output: null,
+                },
             },
             modbus_bus: {
                 setup: null,
@@ -143,11 +158,46 @@ export class save_configuration_t {
             json_pop.comms.mqtt_port = await this.comms.mqtt_port;
         }
 
-        json_pop.cc_midpoints.CC1 = await this.dev.get_cc_mp(1);
-        json_pop.cc_midpoints.CC2 = await this.dev.get_cc_mp(2);
-        json_pop.cc_midpoints.CC3 = await this.dev.get_cc_mp(3);
+        json_pop.cts.CC1.midpoint = await this.dev.get_cc_mp(1);
+        json_pop.cts.CC2.midpoint = await this.dev.get_cc_mp(2);
+        json_pop.cts.CC3.midpoint = await this.dev.get_cc_mp(3);
+        const type1 = await this.dev.get_cc_type(1);
+        const type2 = await this.dev.get_cc_type(2);
+        const type3 = await this.dev.get_cc_type(3);
+        json_pop.cts.CC1.type = type1.slice(-1);
+        json_pop.cts.CC2.type = type2.slice(-1);
+        json_pop.cts.CC3.type = type3.slice(-1);
 
-        this.create_download(json_pop);
+        const gain = await this.dev.get_cc_gain();
+
+        gain.forEach((i, index) => {
+            let meas = null;
+            const meas_regex = /^(CC\d+)/;
+            const meas_match = i.match(meas_regex);
+            if (meas_match) {
+                [, meas] = meas_match;
+                console.log(meas);
+            }
+            const input_ext = /EXT max:\s(\d+(\.\d+)?)/;
+            const match = i.match(input_ext);
+
+            if (match) {
+                const input = match[1];
+                json_pop.cts[meas].input = input;
+            } else {
+                const output_reg = /INT max:\s(\d+(\.\d+)?)/;
+                const output_ext = i.match(output_reg);
+                if (output_ext) {
+                    const output = output_ext[1];
+                    json_pop.cts[meas].output = output;
+                }
+            }
+        });
+
+        const json_str = JSON.stringify(json_pop).replace(/\\n/g, '');
+        const json_final = JSON.parse(json_str);
+
+        this.create_download(json_final);
         loader.style.display = 'none';
         await disable_interaction(false);
     }
