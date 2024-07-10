@@ -4,7 +4,7 @@ JS_DIR:=gui
 
 JS_SRC:=$(shell find $(JS_DIR) -name "*.js")
 
-ESLINT_CFG=.eslintrc.json
+ESLINT_CFG=eslint.config.mjs
 
 
 default: eslint

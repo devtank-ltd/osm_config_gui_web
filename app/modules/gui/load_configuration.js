@@ -77,10 +77,10 @@ export class load_configuration_t {
 
         this.cts = this.content.cts;
         for (const [key, value] of Object.entries(this.cts)) {
-            let output_conv = parseFloat(value.output);
+            const output_conv = parseFloat(value.output);
             await this.dev.update_midpoint(key, value.midpoint);
             await this.dev.set_cc_type(key.slice(-1), value.type);
-            await this.dev.set_cc_gain(key.slice(-1), value.input, output_conv * 1000.);
+            await this.dev.set_cc_gain(key.slice(-1), value.input, output_conv * 1000.0);
         }
 
         await this.dev.do_cmd(`serial_num ${this.content.serial_num}`);

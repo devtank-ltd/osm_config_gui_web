@@ -12,6 +12,7 @@ const NACK = 0x1F;
 const CMD_GET = 0x00;
 const CMD_GID = 0x02;
 const MAX_WRITE_BLOCK_SIZE_STM32 = 256;
+const MAX_WRITE_BLOCK_SIZE_STM8 = 128;
 
 function u8a(array) {
     return new Uint8Array(array);
@@ -44,8 +45,8 @@ export class osm_flash_api_t extends STMApi {
         this.dev = params.dev;
         this.open_params = undefined;
         this.dev_params = {
-                baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
-            };
+            baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
+        };
     }
 
     /**
@@ -63,25 +64,25 @@ export class osm_flash_api_t extends STMApi {
                 .then(() => sleep(100)) /* Slow machines require a delay to gather full response */
                 .then(() => this.readResponse())
                 .then(async (resp) => {
-                    let response = Array.from(resp);
+                    const response = Array.from(resp);
                     if (response[0] !== ACK) {
                         throw new Error('Unexpected response');
                     }
 
-                    if (response.length === 1) { // TODO stm8 sends the bytes with delay. Always or on in reply mode only?
+                    if (response.length === 1) {
                         let res = await this.readResponse();
-                        response[1] = res[0];
+                        [response[1]] = res;
                         res = await this.readResponse(); // bl version
-                        response[2] = res[0];
-                        for (let i = 0; i <= response[1]; i++) {
+                        [response[2]] = res;
+                        for (let i = 0; i <= response[1]; i += 1) {
                             res = await this.readResponse();
-                            response[3 + i] = res[0];
+                            [response[3 + i]] = res;
                         }
                     }
 
-                    let info = new InfoGET();
-                    info.blVersion = (response[2] >> 4) + '.' + (response[2] & 0x0F);
-                    for (let i = 0; i < response[1]; i++) {
+                    const info = new InfoGET();
+                    info.blVersion = `${(response[2] >> 4)}.${(response[2] & 0x0F)}`;
+                    for (let i = 0; i < response[1]; i += 1) {
                         info.commands.push(response[3 + i]);
                     }
                     this.commands = info.commands;
@@ -121,11 +122,11 @@ export class osm_flash_api_t extends STMApi {
             this.serial.write(u8a([CMD_GID, 0xFF ^ CMD_GID]))
                 .then(() => sleep(100)) /* Slow machines require a delay to gather full response */
                 .then(() => this.readResponse())
-                .then(response => {
+                .then((response) => {
                     if (response[0] !== ACK) {
                         throw new Error('Unexpected response');
                     }
-                    let pid = '0x' + tools.b2hexstr(response[2]) + tools.b2hexstr(response[3]);
+                    const pid = `0x${tools.b2hexstr(response[2]) + tools.b2hexstr(response[3])}`;
                     resolve(pid);
                 })
                 .catch(reject);
@@ -201,12 +202,11 @@ export class osm_flash_api_t extends STMApi {
             const signal = {};
             this.serial.open(open_params)
                 .then(() => {
-                    if (navigator.platform === "Linux armv81" || navigator.platform === "Linux x86_64") {
-                    signal.dataTerminalReady = PIN_HIGH;
-                    signal.requestToSend = PIN_HIGH;
-                    return this.serial.control(signal);
+                    if (navigator.platform === 'Linux armv81' || navigator.platform === 'Linux x86_64') {
+                        signal.dataTerminalReady = PIN_HIGH;
+                        signal.requestToSend = PIN_HIGH;
+                        this.serial.control(signal);
                     }
-                    console.log(`Running on ${navigator.platform}`);
                 })
                 .then(() => this.activateBootloader())
                 .then(resolve)
@@ -311,8 +311,8 @@ export class rak3172_flash_api_t extends STMApi {
         this.dev = params.dev;
         this.open_params = undefined;
         this.dev_params = {
-                baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
-            };
+            baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
+        };
         this.comms_mode_span = 3100;
     }
 
@@ -346,26 +346,26 @@ export class rak3172_flash_api_t extends STMApi {
             this.serial.close()
                 .then(() => setTimeout(() => {
                     this.dev.port.open(dev_params)
-                    .then(() => this.dev.do_cmd_multi('comms_boot 0'))
-                    .then(() => this.resetTarget())
-                    .then(() => this.dev.do_cmd_multi('?'))
-                    .then(resolve)
-                    .catch(reject);
+                        .then(() => this.dev.do_cmd_multi('comms_boot 0'))
+                        .then(() => this.resetTarget())
+                        .then(() => this.dev.do_cmd_multi('?'))
+                        .then(resolve)
+                        .catch(reject);
                 }, 4000));
         });
     }
 
     async comms_direct_drain() {
         return new Promise((resolve, reject) => {
-        this.dev.do_cmd_multi('comms_boot 1')
-            .then(() => this.resetTarget())
-            .then(() => this.dev.enter_comms_direct_mode())
-            .then(() => this.dev.exit_comms_direct_mode())
-            .then(() => {
+            this.dev.do_cmd_multi('comms_boot 1')
+                .then(() => this.resetTarget())
+                .then(() => this.dev.enter_comms_direct_mode())
+                .then(() => this.dev.exit_comms_direct_mode())
+                .then(() => {
                     resolve();
                 })
                 .catch(reject);
-            });
+        });
     }
 
     /**

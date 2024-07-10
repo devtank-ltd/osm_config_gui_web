@@ -29,7 +29,7 @@ class config_gui_t {
 
                 this.port.addEventListener('disconnect', () => {
                     this.port.close();
-                    this.disconnect_modal(text='OSM disconnected, return to home page');
+                    this.disconnect_modal('OSM disconnected, return to home page');
                 });
                 const options = {};
                 this.port.open({
@@ -37,7 +37,7 @@ class config_gui_t {
                 })
                     .then(async () => {
                         /* If user is on Windows or Mac we must control handshaking lines */
-                        if (navigator.platform === "Win32" || navigator.platform === "MacIntel") {
+                        if (navigator.platform === 'Win32' || navigator.platform === 'MacIntel') {
                             options.dataTerminalReady = PIN_HIGH;
                             options.requestToSend = PIN_LOW;
                             await this.port.setSignals(options);
@@ -74,14 +74,14 @@ class config_gui_t {
                             error_div.textContent = 'Failed to connect, refresh page and try again.';
                         }
                     });
-                    })
+            })
             .catch((e) => {
-                this.disconnect_modal(text='Could not connect to OSM');
+                this.disconnect_modal('Could not connect to OSM');
                 console.log(e);
             });
     }
 
-    async disconnect_modal(text='Disconnected') {
+    async disconnect_modal(text = 'Disconnected') {
         this.dialog = document.getElementById('osm-disconnect-dialog');
         this.dialog_label = document.getElementById('osm-disconnect-dialog-label');
         this.confirm = document.getElementById('osm-disconnect-confirm');

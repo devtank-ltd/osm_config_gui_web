@@ -197,12 +197,10 @@ export class current_clamp_t {
             output_cell.appendChild(unitopt);
             if (cc_type.includes('Type: V')) {
                 unitopt.selectedIndex = 0;
-            }
-            else if (cc_type.includes('Type: A')) {
+            } else if (cc_type.includes('Type: A')) {
                 unitopt.selectedIndex = 1;
             }
             unitopt.addEventListener('change', this.change_cc_type);
-
 
             const mp_cell = cc_row.insertCell();
             mp_cell.textContent = mp;
@@ -239,23 +237,23 @@ export class current_clamp_t {
         this.extphase = event.target.parentNode.parentNode.cells[0].innerHTML;
         this.val = event.srcElement.value;
         switch (this.extphase) {
-            case 'CC1':
-                this.extphase = 1;
-                await this.dev.set_cc_type(this.extphase, this.val);
-                break;
-            case 'CC2':
-                this.extphase = 2;
-                await this.dev.set_cc_type(this.extphase, this.val);
-                break;
-            case 'CC3':
-                this.extphase = 3;
-                await this.dev.set_cc_type(this.extphase, this.val);
-                break;
-            default:
-                this.extphase = 'undefined';
+        case 'CC1':
+            this.extphase = 1;
+            await this.dev.set_cc_type(this.extphase, this.val);
+            break;
+        case 'CC2':
+            this.extphase = 2;
+            await this.dev.set_cc_type(this.extphase, this.val);
+            break;
+        case 'CC3':
+            this.extphase = 3;
+            await this.dev.set_cc_type(this.extphase, this.val);
+            break;
+        default:
+            this.extphase = 'undefined';
         }
         await disable_interaction(false);
-        }
+    }
 
     async set_cc_interior(event) {
         await disable_interaction(true);

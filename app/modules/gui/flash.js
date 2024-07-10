@@ -119,15 +119,15 @@ class flash_controller_t extends flash_controller_base_t {
 
     get_records(data) {
         const records = [{
-                data: new Uint8Array(data.slice(0, this.SIZE_BOOTLOADER)),
-                address: this.ADDRESS_BOOTLOADER,
-            },
-            {
-                data: new Uint8Array(
-                    data.slice(this.ADDRESS_FIRMWARE - this.ADDRESS_BOOTLOADER, -1),
-                ),
-                address: this.ADDRESS_FIRMWARE,
-            }];
+            data: new Uint8Array(data.slice(0, this.SIZE_BOOTLOADER)),
+            address: this.ADDRESS_BOOTLOADER,
+        },
+        {
+            data: new Uint8Array(
+                data.slice(this.ADDRESS_FIRMWARE - this.ADDRESS_BOOTLOADER, -1),
+            ),
+            address: this.ADDRESS_FIRMWARE,
+        }];
         return records;
     }
 }
@@ -203,8 +203,8 @@ class rak3172_flash_controller_t extends flash_controller_base_t {
                 await stm_api.disconnect();
                 disable_interaction(false);
             });
-        }
     }
+}
 
 export class firmware_t {
     constructor(dev) {
@@ -258,8 +258,7 @@ export class firmware_t {
             console.log(`FW entry for model ${model}`);
             await this.create_firmware_table(fw_entry);
             return true;
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             return false;
         }

@@ -29,19 +29,19 @@ export class save_configuration_t {
                     midpoint: null,
                     type: null,
                     input: null,
-                    output: null
+                    output: null,
                 },
                 CC2: {
                     midpoint: null,
                     type: null,
                     input: null,
-                    output: null
+                    output: null,
                 },
                 CC3: {
                     midpoint: null,
                     type: null,
                     input: null,
-                    output: null
+                    output: null,
                 },
             },
             modbus_bus: {
@@ -164,9 +164,9 @@ export class save_configuration_t {
         const type1 = await this.dev.get_cc_type(1);
         const type2 = await this.dev.get_cc_type(2);
         const type3 = await this.dev.get_cc_type(3);
-        json_pop.cts.CC1.type = type1.slice(-1)
-        json_pop.cts.CC2.type = type2.slice(-1)
-        json_pop.cts.CC3.type = type3.slice(-1)
+        json_pop.cts.CC1.type = type1.slice(-1);
+        json_pop.cts.CC2.type = type2.slice(-1);
+        json_pop.cts.CC3.type = type3.slice(-1);
 
         const gain = await this.dev.get_cc_gain();
 
@@ -175,7 +175,7 @@ export class save_configuration_t {
             const meas_regex = /^(CC\d+)/;
             const meas_match = i.match(meas_regex);
             if (meas_match) {
-                meas = meas_match[1];
+                [, meas] = meas_match;
                 console.log(meas);
             }
             const input_ext = /EXT max:\s(\d+(\.\d+)?)/;
@@ -192,7 +192,7 @@ export class save_configuration_t {
                     json_pop.cts[meas].output = output;
                 }
             }
-        })
+        });
 
         const json_str = JSON.stringify(json_pop).replace(/\\n/g, '');
         const json_final = JSON.parse(json_str);
@@ -201,7 +201,6 @@ export class save_configuration_t {
         loader.style.display = 'none';
         await disable_interaction(false);
     }
-
 
     async create_download(contents) {
         const dlAnchorElem = window.document.createElement('a');
