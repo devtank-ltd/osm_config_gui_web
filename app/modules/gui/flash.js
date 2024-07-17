@@ -266,7 +266,7 @@ export class firmware_t {
 
     flash_latest(fw_info) {
         const { port } = this.dev;
-        if (window.confirm('Are you sure you want to update the firmware?')) {
+        if (window.confirm('Have you downloaded your configuration? Flashing firmware may result in loss of config.')) {
             const fw_path = fw_info.path;
             fetch(`../../fw_releases/${fw_path}`)
                 .then((r) => r.blob())
