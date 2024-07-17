@@ -54,7 +54,7 @@ export class load_configuration_t {
                 }
             })
             .then(async () => {
-                this.comms_type = this.content.comms.type
+                this.comms_type = this.content.comms.type;
             })
             .then(async () => {
                 if (this.comms_type.includes('LW')) {
@@ -74,7 +74,6 @@ export class load_configuration_t {
                     this.mqtt_pwd = this.content.comms.mqtt_pwd;
                     this.mqtt_port = this.content.comms.mqtt_port;
                     this.mqtt_sch = this.content.comms.mqtt_sch;
-
                     await this.dev.do_cmd(`comms_config wifi_ssid ${this.wifi_ssid}`);
                     await this.dev.do_cmd(`comms_config wifi_pwd ${this.wifi_pwd}`);
                     await this.dev.do_cmd(`comms_config mqtt_addr ${this.mqtt_addr}`);
@@ -82,8 +81,6 @@ export class load_configuration_t {
                     await this.dev.do_cmd(`comms_config mqtt_pwd ${this.mqtt_pwd}`);
                     await this.dev.do_cmd(`comms_config mqtt_port ${this.mqtt_port}`);
                     await this.dev.do_cmd(`comms_config mqtt_sch ${this.mqtt_sch}`);
-
-
                 }
             })
             .then(async () => {
@@ -95,11 +92,11 @@ export class load_configuration_t {
                     await this.dev.set_cc_gain(key.slice(-1), value.input, output_conv * 1000.0);
                 }
             })
-            .then(async () => await this.dev.do_cmd(`name ${this.content.name}`))
-            .then(async () => await this.dev.do_cmd(`serial_num ${this.content.serial_num}`))
-            .then(async () => await this.dev.do_cmd(`interval_mins ${this.content.interval_mins}`))
-            .then(async () => await await this.dev.save())
-            .then(async () => await this.dev.do_cmd(`serial_num ${this.content.serial_num}`))
+            .then(() => this.dev.do_cmd(`name ${this.content.name}`))
+            .then(() => this.dev.do_cmd(`serial_num ${this.content.serial_num}`))
+            .then(() => this.dev.do_cmd(`interval_mins ${this.content.interval_mins}`))
+            .then(() => this.dev.save())
+            .then(() => this.dev.do_cmd(`serial_num ${this.content.serial_num}`))
             .then(() => {
                 loader.style.display = 'none';
                 disable_interaction(false);
