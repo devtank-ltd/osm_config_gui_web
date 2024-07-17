@@ -58,7 +58,7 @@ class config_gui_t {
                             await this.dev.do_cmd('version');
                             this.home = new home_tab_t(this.dev, false);
                             await this.home.create_navbar();
-                            await this.home.insert_homepage();
+                            await this.home.insert_homepage(false);
                             const disconnect = document.getElementById('global-disconnect');
                             disconnect.addEventListener('click', async () => {
                                 loader.style.display = 'block';
@@ -120,7 +120,7 @@ class config_gui_t {
         if (this.writer && this.writer.url.readyState === 1) { /* Websocket connection open */
             this.home = new home_tab_t(this.dev, true);
             await this.home.create_navbar();
-            await this.home.insert_homepage();
+            await this.home.insert_homepage(false);
 
             const disconnect = document.getElementById('global-disconnect');
             disconnect.addEventListener('click', async () => {

@@ -31,9 +31,7 @@ export class home_tab_t {
     }
 
     async return_to_home_tab() {
-        await disable_interaction(true);
-        await this.insert_homepage();
-        await disable_interaction(false);
+        await this.insert_homepage(true);
     }
 
     async create_navbar() {
@@ -42,7 +40,7 @@ export class home_tab_t {
         return this.navbar;
     }
 
-    async insert_homepage() {
+    async insert_homepage(returned) {
         const loader = document.getElementById('loader');
         loader.style.display = 'block';
         await disable_interaction(true);
@@ -92,11 +90,13 @@ export class home_tab_t {
         await this.load_name();
         await this.load_serial_number();
 
-        const load_config = new load_configuration_t(this.dev, this.comms);
-        await load_config.add_listener();
+        if (!returned) {
+            const load_config = new load_configuration_t(this.dev, this.comms);
+            await load_config.add_listener();
 
-        const save_config = new save_configuration_t(this.dev, this.comms);
-        await save_config.add_event_listeners();
+            const save_config = new save_configuration_t(this.dev, this.comms);
+            await save_config.add_event_listeners();
+        }
 
         await this.add_event_listeners();
         await disable_interaction(false);
