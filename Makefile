@@ -61,6 +61,14 @@ $(BUILD_DIR)/.webroot/fw_releases:
 dev_fw: $(WEBROOT_BUILD_DIR)/fw_releases
 	cp $(PROJ_DIR)/fw_releases/* $(WEBROOT_BUILD_DIR)/fw_releases/
 
+webhost_bg: webroot
+	cd $(BUILD_DIR); \
+	python3 ./aioserver.py &
+
+webtest: webhost_bg
+	cd tests; \
+	node config_gui_test.js
+	ps -HAf | grep aioserver | tail -1 | awk '{print $$2}' | xargs kill -9
 
 $(BUILD_DIR)/firmware.elf:
 	$(MAKE) -C $(OSM_DIR) penguin_at_wifi
@@ -69,3 +77,4 @@ $(BUILD_DIR)/firmware.elf:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
