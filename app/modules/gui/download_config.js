@@ -19,6 +19,7 @@ export class save_configuration_t {
         const ios_regex = /\IO (?<io>[0-9]{2}) : +(\[(?<specials_avail>[A-Za-z0-9 \|]+)\])? ((USED (?<special_used>[A-Za-z0-9]+)( (?<edge>F|R|B))?)|(?<dir>IN|OUT)) (?<pupd>DOWN|UP|NONE|D|U|N)( = (?<level>ON|OFF))?/;
 
         const json_pop = {
+            name: null,
             version: null,
             serial_num: null,
             interval_mins: null,
@@ -51,6 +52,7 @@ export class save_configuration_t {
             measurements: {},
         };
 
+        this.sensor_id = await this.dev.name;
         this.ios = await this.dev.ios();
         this.measurements = await this.dev.get_measurements();
         this.mb_config = await this.dev.modbus_config();
@@ -140,6 +142,7 @@ export class save_configuration_t {
         }
 
         const serial_num = await this.dev.serial_number;
+        json_pop.name = this.sensor_id;
         json_pop.serial_num = serial_num;
         json_pop.version = await this.dev.firmware_version;
         json_pop.interval_mins = await this.dev.interval_mins;
@@ -150,12 +153,14 @@ export class save_configuration_t {
             json_pop.comms.region = await this.comms.lora_region;
         } else if (this.comms_type.includes('WIFI')) {
             json_pop.comms.type = 'WIFI';
-            json_pop.comms.ssid = await this.comms.wifi_ssid;
+            json_pop.comms.wifi_ssid = await this.comms.wifi_ssid;
             json_pop.comms.wifi_pwd = await this.comms.wifi_pwd;
             json_pop.comms.mqtt_addr = await this.comms.mqtt_addr;
             json_pop.comms.mqtt_user = await this.comms.mqtt_user;
             json_pop.comms.mqtt_pwd = await this.comms.mqtt_pwd;
             json_pop.comms.mqtt_port = await this.comms.mqtt_port;
+            json_pop.comms.mqtt_sch = await this.comms.mqtt_sch;
+
         }
 
         json_pop.cts.CC1.midpoint = await this.dev.get_cc_mp(1);

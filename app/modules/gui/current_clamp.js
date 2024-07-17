@@ -135,11 +135,21 @@ export class current_clamp_t {
             opt4.text = 100;
             const opt5 = document.createElement('option');
             opt5.text = 200;
+            const opt300 = document.createElement('option');
+            opt300.text = 300;
+            const opt400 = document.createElement('option');
+            opt400.text = 400;
+            const opt500 = document.createElement('option');
+            opt500.text = 500;
             input_sel.add(opt1);
             input_sel.add(opt2);
             input_sel.add(opt3);
             input_sel.add(opt4);
             input_sel.add(opt5);
+            input_sel.add(opt300);
+            input_sel.add(opt400);
+            input_sel.add(opt500);
+
             input_sel.addEventListener('change', this.set_cc_exterior);
 
             for (let k = 0; k < input_sel.options.length; k += 1) {
