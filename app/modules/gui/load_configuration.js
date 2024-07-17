@@ -103,6 +103,7 @@ export class load_configuration_t {
             .then(() => {
                 loader.style.display = 'none';
                 disable_interaction(false);
+                window.location.reload();
             });
     }
 
