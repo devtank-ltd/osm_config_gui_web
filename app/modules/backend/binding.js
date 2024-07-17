@@ -115,10 +115,22 @@ class low_level_serial_t {
         const decoder = new TextDecoder();
         let reader;
         let msg;
+        const timeout = 1000; // Timeout in milliseconds
+
         try {
             reader = this.port.readable.getReader();
-            const { value, done } = await reader.read();
-            msg = decoder.decode(value);
+
+            const readPromise = reader.read();
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Read operation timed out')), timeout)
+            );
+
+            const { value, done } = await Promise.race([readPromise, timeoutPromise]);
+            if (done) {
+                msg = null; // Handle the case where reading is done
+            } else {
+                msg = decoder.decode(value);
+            }
         } catch (error) {
             console.log(error);
         } finally {
