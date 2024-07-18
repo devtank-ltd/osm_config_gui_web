@@ -21,12 +21,12 @@ export class measurements_table_t {
             HUM2: 'Humidity (Particulate Sensor)',
             HUMI: 'Humidity',
             BAT: 'Battery',
-            CNT1: 'Pulsecount',
-            CNT2: 'Pulsecount',
+            CNT1: 'Pulsecount Channel 1',
+            CNT2: 'Pulsecount Channel 2',
             LGHT: 'Light',
             SND: 'Sound',
-            IO01: 'Pulsecount',
-            IO02: 'Pulsecount',
+            IO01: 'Pulsecount (IO Watch Channel 1)',
+            IO02: 'Pulsecount (IO Watch Channel 2)',
         };
     }
 
