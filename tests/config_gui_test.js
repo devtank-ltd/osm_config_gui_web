@@ -26,11 +26,11 @@ class config_gui_test_t {
 
             await this.spawn_virtual_osm();
             await this.set_serial_num();
-            await sleep(1000);
+            await sleep(2000);
             await this.set_name();
-            await sleep(1000);
+            await sleep(2000);
             await this.set_interval_mins();
-            await sleep(1000);
+            await sleep(2000);
             await this.fill_wifi_config_table();
             await sleep(3000);
             await this.switch_to_console_tab();
@@ -38,6 +38,7 @@ class config_gui_test_t {
 
             const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
             await disconnect_btn.click();
+            await sleep(5000);
 
         } catch (e) {
             console.log(e)
