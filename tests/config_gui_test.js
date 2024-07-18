@@ -1,4 +1,5 @@
-const {By, Builder, Browser, until} = require('selenium-webdriver');
+const { By, Builder, Browser, until } = require('selenium-webdriver');
+const {Options} = require("selenium-webdriver/chrome.js");
 const assert = require("assert");
 
 
@@ -8,9 +9,16 @@ class config_gui_test_t {
         this.spawn_virtual_osm = this.spawn_virtual_osm.bind(this);
     }
 
-    async run_test() {
+    async run_test(headless) {
         try {
-            this.driver = await new Builder().forBrowser(Browser.CHROME).build()
+
+            const options = new Options();
+            if (headless) {
+                options.addArguments('--headless=new')
+            }
+            console.log(options);
+
+            this.driver = await new Builder().setChromeOptions(options).build()
             await this.driver.get('http://localhost:8000');
 
             let title = await this.driver.getTitle();
@@ -23,7 +31,7 @@ class config_gui_test_t {
         } catch (e) {
             console.log(e)
         } finally {
-            await this.driver.quit();
+             await this.driver.quit();
         }
     }
 
@@ -38,4 +46,4 @@ class config_gui_test_t {
 
 let driver;
 const tester = new config_gui_test_t(driver);
-tester.run_test();
+tester.run_test(false);
