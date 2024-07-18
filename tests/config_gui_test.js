@@ -32,10 +32,12 @@ class config_gui_test_t {
             await this.set_interval_mins();
             await sleep(1000);
             await this.fill_wifi_config_table();
+            await sleep(3000);
+            await this.switch_to_console_tab();
+
 
             const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
             await disconnect_btn.click();
-
 
         } catch (e) {
             console.log(e)
@@ -79,6 +81,17 @@ class config_gui_test_t {
         this.driver.findElement(By.id("home-uplink-input")).sendKeys("15");
         const submit_btn = await this.driver.findElement(By.id('home-uplink-submit'));
         await submit_btn.click();
+    }
+
+    async switch_to_console_tab() {
+        const console_btn = await this.driver.findElement(By.id('console-tab'));
+        await console_btn.click();
+
+        await sleep(1000);
+
+        this.driver.findElement(By.id("console-cmd-input")).sendKeys("?");
+        const send_btn = await this.driver.findElement(By.id('console-send-cmd-btn'));
+        send_btn.click();
     }
 
 }
