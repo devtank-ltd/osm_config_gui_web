@@ -2,6 +2,7 @@ const { By, Builder, Browser, until } = require('selenium-webdriver');
 const {Options} = require("selenium-webdriver/chrome.js");
 const assert = require("assert");
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 class config_gui_test_t {
     constructor(driver) {
@@ -16,7 +17,6 @@ class config_gui_test_t {
             if (headless) {
                 options.addArguments('--headless=new')
             }
-            console.log(options);
 
             this.driver = await new Builder().setChromeOptions(options).build()
             await this.driver.get('http://localhost:8000');
@@ -25,42 +25,64 @@ class config_gui_test_t {
             assert.equal("OSM Config GUI", title);
 
             await this.spawn_virtual_osm();
-
+            await this.set_serial_num();
+            await sleep(1000);
+            await this.set_name();
+            await sleep(1000);
+            await this.set_interval_mins();
+            await sleep(1000);
             await this.fill_wifi_config_table();
 
             const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
             await disconnect_btn.click();
+
+
         } catch (e) {
             console.log(e)
-        } finally {
-             await this.driver.quit();
+         } finally {
+            await this.driver.quit();
         }
     }
 
     async spawn_virtual_osm() {
         const connect_btn = await this.driver.findElement(By.id('main-page-websocket-connect'));
         await connect_btn.click();
-
-        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
         await sleep(5000);
     }
 
     async fill_wifi_config_table() {
-        this.driver.findElement(By.id("wifi-ssid-value")).sendKeys("value", "none");
-        this.driver.findElement(By.id("wifi-pwd-value")).sendKeys("value", "none");
-        this.driver.findElement(By.id("wifi-mqtt-addr-value")).sendKeys("value", "mqtt.addr");
-        this.driver.findElement(By.id("wifi-mqtt-user-value")).sendKeys("value", "mqtt-user");
-        this.driver.findElement(By.id("wifi-mqtt-pwd-value")).sendKeys("value", "mqtt-pwd");
-        this.driver.findElement(By.id("wifi-mqtt-port-value")).sendKeys("value", "443");
+        this.driver.findElement(By.id("wifi-ssid-value")).sendKeys("none");
+        this.driver.findElement(By.id("wifi-pwd-value")).sendKeys("none");
+        this.driver.findElement(By.id("wifi-mqtt-addr-value")).sendKeys("mqtt.addr");
+        this.driver.findElement(By.id("wifi-mqtt-user-value")).sendKeys("mqtt-user");
+        this.driver.findElement(By.id("wifi-mqtt-pwd-value")).sendKeys("mqtt-pwd");
+        this.driver.findElement(By.id("wifi-mqtt-port-value")).click();
+        this.driver.findElement(By.id("wifi-mqtt-port-value")).clear();
+        this.driver.findElement(By.id("wifi-mqtt-port-value")).sendKeys("443");
         this.driver.findElement(By.id("mqtt-scheme-dropdown")).sendKeys('Websockets (TLS no certs)');
 
         const send_btn = await this.driver.findElement(By.id('wifi-send-config'));
         await send_btn.click();
     }
 
+    async set_serial_num() {
+        this.driver.findElement(By.id("serial-num-input")).sendKeys("osm_test_serial_001");
+    }
 
+    async set_name() {
+        this.driver.findElement(By.id("name-input")).click();
+        this.driver.findElement(By.id("name-input")).clear();
+        this.driver.findElement(By.id("name-input")).sendKeys("osm_test_name");
+    }
+
+    async set_interval_mins() {
+        this.driver.findElement(By.id("home-uplink-input")).sendKeys("15");
+        const submit_btn = await this.driver.findElement(By.id('home-uplink-submit'));
+        await submit_btn.click();
+    }
 
 }
+
 
 let driver;
 const tester = new config_gui_test_t(driver);
