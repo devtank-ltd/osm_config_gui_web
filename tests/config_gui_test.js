@@ -26,6 +26,8 @@ class config_gui_test_t {
 
             await this.spawn_virtual_osm();
 
+            await this.fill_wifi_config_table();
+
             const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
             await disconnect_btn.click();
         } catch (e) {
@@ -42,6 +44,22 @@ class config_gui_test_t {
         const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
         await sleep(5000);
     }
+
+    async fill_wifi_config_table() {
+        this.driver.findElement(By.id("wifi-ssid-value")).sendKeys("value", "none");
+        this.driver.findElement(By.id("wifi-pwd-value")).sendKeys("value", "none");
+        this.driver.findElement(By.id("wifi-mqtt-addr-value")).sendKeys("value", "mqtt.addr");
+        this.driver.findElement(By.id("wifi-mqtt-user-value")).sendKeys("value", "mqtt-user");
+        this.driver.findElement(By.id("wifi-mqtt-pwd-value")).sendKeys("value", "mqtt-pwd");
+        this.driver.findElement(By.id("wifi-mqtt-port-value")).sendKeys("value", "443");
+        this.driver.findElement(By.id("mqtt-scheme-dropdown")).sendKeys('Websockets (TLS no certs)');
+
+        const send_btn = await this.driver.findElement(By.id('wifi-send-config'));
+        await send_btn.click();
+    }
+
+
+
 }
 
 let driver;
