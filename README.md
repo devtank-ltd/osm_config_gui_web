@@ -8,6 +8,16 @@ This project uses osm\_firmware as a submodule, so you may need to enter the fol
 
 There may be packages to install for that repository, check the docs in there for getting started with OSM firmware.
 
+## Dependencies
+
+You will need the Penguin/Linux build dependencies of the osm_firmware git submodule.
+See [OSM Firmware docs](osm_firmware/docs/osm_firmware_getting_started.md).
+
+You will also need AIOHTTP Python3 module. On a Debian based system do:
+
+    sudo apt install python3-aiohttp
+
+
 ## Run Application
 
 
