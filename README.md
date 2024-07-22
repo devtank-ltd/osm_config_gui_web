@@ -6,7 +6,6 @@ This project uses osm\_firmware as a submodule, so you may need to enter the fol
 
     git submodule update --init --recursive
 
-There may be packages to install for that repository, check the docs in there for getting started with OSM firmware.
 
 ## Dependencies
 
