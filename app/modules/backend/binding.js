@@ -90,7 +90,7 @@ class low_level_serial_t {
         const decoder = new TextDecoder();
         let msgs = '';
         const start_time = Date.now();
-        const reader = this.port.readable.getReader();
+        const reader = await this.port.readable.getReader();
         try {
             while (Date.now() > start_time - timeout) {
                 const { value, done } = await reader.read();
@@ -115,10 +115,20 @@ class low_level_serial_t {
         const decoder = new TextDecoder();
         let reader;
         let msg;
+        const timeout = 1000; // Timeout in milliseconds
+
         try {
             reader = this.port.readable.getReader();
-            const { value, done } = await reader.read();
-            msg = decoder.decode(value);
+
+            const read_ = reader.read();
+            const timeout_promise = new Promise((_, reject) => setTimeout(() => reject(new Error('Read operation timed out')), timeout));
+
+            const { value, done } = await Promise.race([read_, timeout_promise]);
+            if (done) {
+                msg = null; // Handle the case where reading is done
+            } else {
+                msg = decoder.decode(value);
+            }
         } catch (error) {
             console.log(error);
         } finally {
