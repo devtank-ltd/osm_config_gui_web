@@ -8,137 +8,97 @@
     "parity": "None",
     "stopbits": 1,
     "registers": {
-        "ZRVi": {
-            "hex": "0x960",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "ZRVm": {
+        "ZRV1": {
             "hex": "0x962",
             "function": 3,
             "datatype": "U16"
         },
-        "TMPF": {
-            "hex": "0x30",
-            "function": 3,
-            "datatype": "I16"
-        },
-        "TMPC": {
+        "TPC1": {
             "hex": "0x2a",
             "function": 3,
             "datatype": "I16"
         },
-        "XRVi": {
-            "hex": "0x992",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "XRVm": {
+        "XRV1": {
             "hex": "0x994",
             "function": 3,
             "datatype": "U16"
         },
-        "ZPAG": {
+        "ZPA1": {
             "hex": "0x966",
             "function": 3,
             "datatype": "U16"
         },
-        "XPAG": {
+        "XPA1": {
             "hex": "0x998",
             "function": 3,
             "datatype": "U16"
         },
-        "ZPVF": {
+        "ZPF1": {
             "hex": "0x964",
             "function": 3,
             "datatype": "U16"
         },
-        "XPVF": {
+        "XPF1": {
             "hex": "0x996",
             "function": 3,
             "datatype": "U16"
         },
-        "ZRAG": {
+        "ZRa1": {
             "hex": "0x965",
             "function": 3,
             "datatype": "U16"
         },
-        "XRAG": {
+        "XRa1": {
             "hex": "0x997",
             "function": 3,
             "datatype": "U16"
         },
-        "ZKRT": {
+        "ZKT1": {
             "hex": "0x968",
             "function": 3,
             "datatype": "U16"
         },
-        "XKRT": {
+        "XKT1": {
             "hex": "0x99a",
             "function": 3,
             "datatype": "U16"
         },
-        "ZCF": {
+        "ZCF1": {
             "hex": "0x967",
             "function": 3,
             "datatype": "U16"
         },
-        "XCF": {
+        "XCF1": {
             "hex": "0x999",
             "function": 3,
             "datatype": "U16"
         },
-        "ZPVi": {
-            "hex": "0x961",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "ZPVm": {
+        "ZPV1": {
             "hex": "0x963",
             "function": 3,
             "datatype": "U16"
         },
-        "XPVi": {
-            "hex": "0x993",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "XPVm": {
+        "XPV1": {
             "hex": "0x995",
             "function": 3,
             "datatype": "U16"
         },
-        "ZHRA": {
+        "ZRA1": {
             "hex": "0x969",
             "function": 3,
             "datatype": "U16"
         },
-        "XHRA": {
+        "XRA1": {
             "hex": "0x99b",
             "function": 3,
             "datatype": "U16"
         },
-        "BAUD": {
-            "hex": "0x17d4",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "PAR": {
-            "hex": "0x17d5",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "ADDR": {
-            "hex": "0x17d6",
-            "function": 3,
-            "datatype": "U16"
-        },
-        "ROTR": {
+        "RTR1": {
             "hex": "0xa28",
             "function": 3,
             "datatype": "U16"
         },
-        "ROTH": {
+        "RTH1": {
             "hex": "0xa29",
             "function": 3,
             "datatype": "U16"

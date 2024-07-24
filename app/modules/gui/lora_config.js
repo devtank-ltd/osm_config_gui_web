@@ -76,7 +76,7 @@ export class lora_config_t {
                 }
             } else if (i === 'Status') {
                 const td = r.insertCell();
-                conn = (conn === '1 | Connected') ? 'Connected' : 'Disconnected';
+                conn = (conn.includes('1 | Connected')) ? 'Connected' : 'Disconnected';
                 td.textContent = conn;
                 td.id = 'lora-status-value';
             }

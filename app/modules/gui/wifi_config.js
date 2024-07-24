@@ -93,7 +93,7 @@ export class wifi_config_t {
                 break;
             case 'Status':
                 const st = r.insertCell();
-                conn = (conn === '1 | Connected') ? 'Connected' : 'Disconnected';
+                conn = (conn.includes('1 | Connected')) ? 'Connected' : 'Disconnected';
                 st.textContent = conn;
                 st.id = 'wifi-status-value';
                 break;
