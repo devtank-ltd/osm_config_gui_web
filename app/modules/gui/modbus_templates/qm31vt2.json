@@ -1,0 +1,107 @@
+{
+    "name": "QM31",
+    "desc": "QM31VT2 Vibration Sensor",
+    "unit_id": "2",
+    "wordorder": "MSW",
+    "byteorder": "MSB",
+    "bits": 8,
+    "parity": "None",
+    "stopbits": 1,
+    "registers": {
+        "ZRV2": {
+            "hex": "0x962",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "TPC2": {
+            "hex": "0x2a",
+            "function": 3,
+            "datatype": "I16"
+        },
+        "XRV2": {
+            "hex": "0x994",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPA2": {
+            "hex": "0x966",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPA2": {
+            "hex": "0x998",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPF2": {
+            "hex": "0x964",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPF2": {
+            "hex": "0x996",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZRa2": {
+            "hex": "0x965",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XRa2": {
+            "hex": "0x997",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZKT2": {
+            "hex": "0x968",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XKT2": {
+            "hex": "0x99a",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZCF2": {
+            "hex": "0x967",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XCF2": {
+            "hex": "0x999",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZPV2": {
+            "hex": "0x963",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XPV2": {
+            "hex": "0x995",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ZRA2": {
+            "hex": "0x969",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "XRA2": {
+            "hex": "0x99b",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "RTR2": {
+            "hex": "0xa28",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "RTH2": {
+            "hex": "0xa29",
+            "function": 3,
+            "datatype": "U16"
+        }
+    }
+}
