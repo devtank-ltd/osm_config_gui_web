@@ -17,6 +17,7 @@ class config_gui_test_t {
             if (headless) {
                 options.addArguments('--headless=new')
             }
+            options.addArguments('--no-sandbox')
 
             this.driver = await new Builder().setChromeOptions(options).build()
             await this.driver.get('http://localhost:8000');
@@ -48,6 +49,7 @@ class config_gui_test_t {
             if (headless) {
                 options.addArguments('--headless=new')
             }
+            options.addArguments('--no-sandbox')
 
             this.driver = await new Builder().setChromeOptions(options).build()
             await this.driver.get('http://localhost:8000');
