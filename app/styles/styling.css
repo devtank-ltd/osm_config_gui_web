@@ -26,6 +26,21 @@ input[type=number] {
   animation: spin 2s linear infinite;
 }
 
+select {
+  font-family: "Open Sans", sans-serif;
+  font-size: medium;
+}
+
+.mqtt-scheme-dropdown {
+  width: 100%;
+  text-align: center;
+}
+.wifi-ssid-dropdown {
+  width: 80%;
+  text-align: center;
+}
+}
+
 .progress {
   margin-top: 20px;
   width: 50%;
@@ -35,7 +50,7 @@ input[type=number] {
 }
 
 .progressbar {
-  width: 1%;
+  width: 0%;
   height: 30px;
   background-color: var(--osmdark);
 }
@@ -75,6 +90,20 @@ button {
   font-size: small;
   padding: 5px 10px;
   margin: 2px;
+}
+.wifi-ssid-div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px;
+}
+
+.wifi-ssid-refresh {
+  width: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10px;
 }
 
 button:hover {

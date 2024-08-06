@@ -602,6 +602,19 @@ export class binding_t {
         await this.ll.read('Flash successfully written');
     }
 
+    async network_list() {
+        const output = await this.do_cmd('comms_list');
+        console.log(output);
+        let comms_j = null;
+        try {
+            comms_j = JSON.parse(output);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+        return comms_j;
+    }
+
     async comms_type() {
         const comms_config = await this.do_cmd('j_comms_cfg');
         const comms_formatted = await this.insert_backslash(comms_config);

@@ -1,9 +1,12 @@
 import { disable_interaction } from './disable.js';
 
 export class wifi_config_t {
-    constructor(comms) {
+    constructor(dev, comms) {
+        this.dev = dev;
         this.comms = comms;
         this.write_config = this.write_config.bind(this);
+        this.populate_wifi_fields = this.populate_wifi_fields.bind(this);
+        this.populate_wifi_ssid_dropdown = this.populate_wifi_ssid_dropdown.bind(this);
     }
 
     async add_listeners() {
@@ -11,10 +14,32 @@ export class wifi_config_t {
         sendbtn.onclick = this.write_config;
     }
 
+    async get_ssid_html() {
+        this.resp = await fetch('modules/gui/html/wifi_ssid_dropdown.html');
+        this.text = await this.resp.text();
+        return this.text;
+    }
+
     async get_scheme_html() {
         this.resp = await fetch('modules/gui/html/mqtt_scheme_dropdown.html');
         this.text = await this.resp.text();
         return this.text;
+    }
+
+    async populate_wifi_ssid_dropdown() {
+        disable_interaction(true);
+        const loader = document.getElementById('loader');
+        loader.style.opacity = '100';
+        this.wifi_ssid_sel.innerHTML = '';
+        this.comms_list = await this.dev.network_list();
+        loader.style.opacity = '0';
+        disable_interaction(false);
+
+        for (let i = 0; i < this.comms_list.length; i += 1) {
+            let opt = document.createElement('option');
+            opt.text = this.comms_list[i].SSID;
+            this.wifi_ssid_sel.add(opt);
+        }
     }
 
     async populate_wifi_fields() {
@@ -29,6 +54,7 @@ export class wifi_config_t {
         const mqtt_port = await this.comms.mqtt_port;
         const mqtt_scheme = await this.comms.mqtt_sch;
         const scheme_dropdwn = await this.get_scheme_html();
+        const ssid_dropdwn = await this.get_ssid_html();
 
         let conn = await this.comms.comms_conn;
 
@@ -51,9 +77,13 @@ export class wifi_config_t {
             switch (i) {
             case 'SSID':
                 const td = r.insertCell();
-                td.textContent = ssid;
-                td.id = 'wifi-ssid-value';
-                td.contentEditable = true;
+                td.innerHTML = ssid_dropdwn;
+                this.wifi_ssid_sel = document.getElementById('wifi-ssid-dropdown');
+                const opt = document.createElement('option');
+                opt.text = ssid;
+                this.wifi_ssid_sel.add(opt);
+                this.wifi_ssid_refresh = document.getElementById('wifi-ssid-refresh');
+                this.wifi_ssid_refresh.onclick = this.populate_wifi_ssid_dropdown;
                 break;
             case 'WiFi Password':
                 const wi = r.insertCell();
@@ -107,7 +137,9 @@ export class wifi_config_t {
         await disable_interaction(true);
         const wifimsg = document.getElementById('wifi-msg-div');
         wifimsg.textContent = '';
-        const ssid = document.getElementById('wifi-ssid-value').textContent;
+        let ssid = document.getElementById('wifi-ssid-dropdown')
+        ssid.selectedIndex.text;
+        ssid = ssid.options[ssid.selectedIndex].text;
         const wifi_pwd = document.getElementById('wifi-pwd-value').textContent;
         const mqtt_addr = document.getElementById('wifi-mqtt-addr-value').textContent;
         const mqtt_user = document.getElementById('wifi-mqtt-user-value').textContent;
