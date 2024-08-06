@@ -1,4 +1,4 @@
-const { By, Builder, Browser, until } = require('selenium-webdriver');
+const { By, Builder, Browser, until, Key } = require('selenium-webdriver');
 const {Options} = require("selenium-webdriver/chrome.js");
 const assert = require("assert");
 
@@ -26,15 +26,38 @@ class config_gui_test_t {
 
             await this.spawn_virtual_osm();
             await this.set_serial_num();
-            await sleep(2000);
             await this.set_name();
-            await sleep(2000);
             await this.set_interval_mins();
-            await sleep(2000);
             await this.fill_wifi_config_table();
-            await sleep(3000);
             await this.switch_to_console_tab();
 
+            const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
+            await disconnect_btn.click();
+            await sleep(5000);
+        } catch (e) {
+            console.log(e)
+         } finally {
+            await this.driver.quit();
+        }
+    }
+
+    async run_real(headless) {
+        try {
+
+            const options = new Options();
+            if (headless) {
+                options.addArguments('--headless=new')
+            }
+
+            this.driver = await new Builder().setChromeOptions(options).build()
+            await this.driver.get('http://localhost:8000');
+
+            let title = await this.driver.getTitle();
+            assert.equal("OSM Config GUI", title);
+
+            await this.connect_real_osm();
+
+            await this.lw_comms_fw_update();
 
             const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
             await disconnect_btn.click();
@@ -47,11 +70,20 @@ class config_gui_test_t {
         }
     }
 
+    async connect_real_osm() {
+        const connect_btn = await this.driver.findElement(By.id('main-page-connect'));
+        await connect_btn.click();
+
+        await sleep(2000);
+
+    }
+
     async spawn_virtual_osm() {
         const connect_btn = await this.driver.findElement(By.id('main-page-websocket-connect'));
         await connect_btn.click();
         await sleep(5000);
     }
+
 
     async fill_wifi_config_table() {
         this.driver.findElement(By.id("wifi-ssid-value")).sendKeys("none");
@@ -66,22 +98,26 @@ class config_gui_test_t {
 
         const send_btn = await this.driver.findElement(By.id('wifi-send-config'));
         await send_btn.click();
+        await sleep(3000);
     }
 
     async set_serial_num() {
         this.driver.findElement(By.id("serial-num-input")).sendKeys("osm_test_serial_001");
+        await sleep(2000);
     }
 
     async set_name() {
         this.driver.findElement(By.id("name-input")).click();
         this.driver.findElement(By.id("name-input")).clear();
         this.driver.findElement(By.id("name-input")).sendKeys("osm_test_name");
+        await sleep(2000);
     }
 
     async set_interval_mins() {
         this.driver.findElement(By.id("home-uplink-input")).sendKeys("15");
         const submit_btn = await this.driver.findElement(By.id('home-uplink-submit'));
         await submit_btn.click();
+        await sleep(2000);
     }
 
     async switch_to_console_tab() {
@@ -90,9 +126,20 @@ class config_gui_test_t {
 
         await sleep(1000);
 
-        this.driver.findElement(By.id("console-cmd-input")).sendKeys("?");
+        this.driver.findElement(By.id("console-cmd-input")).sendKeys("wipe");
         const send_btn = await this.driver.findElement(By.id('console-send-cmd-btn'));
         send_btn.click();
+        await sleep(1000);
+    }
+
+    async lw_comms_fw_update() {
+        const comms_btn = await this.driver.findElement(By.id('comms-btn'));
+        await comms_btn.click();
+
+
+        const confirm = await this.driver.switchTo().alert();
+        const confirm_text = await confirm.getText();
+        await confirm.accept();
     }
 
 }
@@ -100,4 +147,5 @@ class config_gui_test_t {
 
 let driver;
 const tester = new config_gui_test_t(driver);
-tester.run_test(false);
+const is_headless = false;
+tester.run_test(is_headless);
