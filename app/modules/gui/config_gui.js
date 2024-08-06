@@ -50,7 +50,7 @@ class config_gui_t {
                     })
                     .then(async () => {
                         const loader = document.getElementById('loader');
-                        loader.style.display = 'block';
+                        loader.style.opacity = '100';
                         this.dev = new binding_t(this.port, type);
                         this.writer = await this.dev.open_ll_obj();
                         if (this.writer) {
@@ -61,7 +61,7 @@ class config_gui_t {
                             await this.home.insert_homepage(false);
                             const disconnect = document.getElementById('global-disconnect');
                             disconnect.addEventListener('click', async () => {
-                                loader.style.display = 'block';
+                                loader.style.opacity = '100';
                                 await this.port.close();
                                 await this.port.forget();
                                 this.port = null;
@@ -115,7 +115,7 @@ class config_gui_t {
         const xmlHttp = new XMLHttpRequest();
         xmlHttp.open('GET', this.url, true);
         this.dev = new binding_t(this.url, 'websocket');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         this.writer = await this.dev.open_ll_obj();
         if (this.writer && this.writer.url.readyState === 1) { /* Websocket connection open */
             this.home = new home_tab_t(this.dev, true);
@@ -133,7 +133,7 @@ class config_gui_t {
             globalbtns.style.removeProperty('display');
         } else {
             error_div.textContent = 'Failed to connect to virtual OSM.';
-            loader.style.display = 'none';
+            loader.style.opacity = '0';
         }
     }
 }

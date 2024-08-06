@@ -17,7 +17,7 @@ export class load_configuration_t {
     load_gui_with_config(content) {
         disable_interaction(true);
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         this.dev.wipe()
             .then(() => {
                 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -98,7 +98,7 @@ export class load_configuration_t {
             .then(() => this.dev.save())
             .then(() => this.dev.do_cmd(`serial_num ${this.content.serial_num}`))
             .then(() => {
-                loader.style.display = 'none';
+                loader.style.opacity = '0';
                 disable_interaction(false);
                 window.location.reload();
             });

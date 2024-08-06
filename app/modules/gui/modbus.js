@@ -101,7 +101,7 @@ export class modbus_t {
 
     async remove_modbus_register() {
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         await disable_interaction(true);
         this.dev_to_remove = '';
         let found = false;
@@ -119,7 +119,7 @@ export class modbus_t {
         if (!found) {
             this.modbus_modal('Select a register.');
             await disable_interaction(false);
-            loader.style.display = 'none';
+            loader.style.opacity = '0';
             return;
         }
         this.mb_current_config_div.innerHTML = '';
@@ -134,12 +134,12 @@ export class modbus_t {
             await this.dev.remove_modbus_dev(this.dev_to_remove);
         }
         await disable_interaction(false);
-        loader.style.display = 'none';
+        loader.style.opacity = '0';
     }
 
     async remove_modbus_device() {
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         await disable_interaction(true);
         let found = false;
         for (let i = 0; i < this.checkboxes.length; i += 1) {
@@ -154,13 +154,13 @@ export class modbus_t {
         if (!found) {
             this.modbus_modal('Select a register.');
             await disable_interaction(false);
-            loader.style.display = 'none';
+            loader.style.opacity = '0';
             return;
         }
         this.mb_current_config_div.innerHTML = '';
         await this.current_modbus_config_table();
         await disable_interaction(false);
-        loader.style.display = 'none';
+        loader.style.opacity = '0';
     }
 
     async load_json_templates() {
@@ -269,7 +269,7 @@ export class modbus_t {
     async apply_template(e) {
         if (this.template) {
             const loader = document.getElementById('loader');
-            loader.style.display = 'block';
+            loader.style.opacity = '100';
             await disable_interaction(true);
             await this.dev.mb_dev_add(
                 this.template.unit_id,
@@ -297,7 +297,7 @@ export class modbus_t {
             this.mb_current_config_div.innerHTML = '';
             await this.current_modbus_config_table();
             await disable_interaction(false);
-            loader.style.display = 'none';
+            loader.style.opacity = '0';
         } else {
             this.modbus_modal('Select a template.');
         }

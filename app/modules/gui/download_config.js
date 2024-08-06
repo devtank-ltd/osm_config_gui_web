@@ -15,7 +15,7 @@ export class save_configuration_t {
     async save_config() {
         await disable_interaction(true);
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         const ios_regex = /\IO (?<io>[0-9]{2}) : +(\[(?<specials_avail>[A-Za-z0-9 \|]+)\])? ((USED (?<special_used>[A-Za-z0-9]+)( (?<edge>F|R|B))?)|(?<dir>IN|OUT)) (?<pupd>DOWN|UP|NONE|D|U|N)( = (?<level>ON|OFF))?/;
 
         const json_pop = {
@@ -203,7 +203,7 @@ export class save_configuration_t {
         const json_final = JSON.parse(json_str);
 
         this.create_download(json_final);
-        loader.style.display = 'none';
+        loader.style.opacity = '0';
         await disable_interaction(false);
     }
 
