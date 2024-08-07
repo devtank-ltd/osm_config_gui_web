@@ -36,10 +36,16 @@ export class wifi_config_t {
         loader.style.opacity = '0';
         disable_interaction(false);
 
-        for (let i = 0; i < this.comms_list.length; i += 1) {
-            const opt = document.createElement('option');
-            opt.text = this.comms_list[i].SSID;
-            this.wifi_ssid_sel.add(opt);
+        if (this.comms_list) {
+            for (let i = 0; i < this.comms_list.length; i += 1) {
+                const opt = document.createElement('option');
+                opt.text = this.comms_list[i].SSID;
+                this.wifi_ssid_sel.add(opt);
+            }
+        } else {
+            const emptyopt = document.createElement('option');
+            emptyopt.text = '';
+            this.wifi_ssid_sel.add(emptyopt);
         }
         this.add_other_ssid_opt();
     }

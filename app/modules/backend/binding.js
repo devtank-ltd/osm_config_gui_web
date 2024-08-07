@@ -603,7 +603,13 @@ export class binding_t {
     }
 
     async network_list() {
-        const output = await this.do_cmd('comms_list');
+        let output = null;
+        try {
+            output = await this.do_cmd('comms_list');
+        } catch (e) {
+            console.log(e);
+            return output;
+        }
         console.log(output);
         let comms_j = null;
         try {
