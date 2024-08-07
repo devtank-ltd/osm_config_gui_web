@@ -160,7 +160,6 @@ export class save_configuration_t {
             json_pop.comms.mqtt_pwd = await this.comms.mqtt_pwd;
             json_pop.comms.mqtt_port = await this.comms.mqtt_port;
             json_pop.comms.mqtt_sch = await this.comms.mqtt_sch;
-
         }
 
         json_pop.cts.CC1.midpoint = await this.dev.get_cc_mp(1);

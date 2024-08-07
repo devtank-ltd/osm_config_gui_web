@@ -37,7 +37,7 @@ export class wifi_config_t {
         disable_interaction(false);
 
         for (let i = 0; i < this.comms_list.length; i += 1) {
-            let opt = document.createElement('option');
+            const opt = document.createElement('option');
             opt.text = this.comms_list[i].SSID;
             this.wifi_ssid_sel.add(opt);
         }
@@ -55,7 +55,7 @@ export class wifi_config_t {
             } else {
                 this.wifi_ssid_sel.nextElementSibling.style.display = 'none';
             }
-        })
+        });
     }
 
     async populate_wifi_fields() {
@@ -154,15 +154,11 @@ export class wifi_config_t {
         await disable_interaction(true);
         const wifimsg = document.getElementById('wifi-msg-div');
         wifimsg.textContent = '';
-        let ssid = document.getElementById('wifi-ssid-dropdown')
-        ssid.selectedIndex.text;
+        let ssid = document.getElementById('wifi-ssid-dropdown');
         ssid = ssid.options[ssid.selectedIndex].text;
-        console.log(`pre ssid: ${ssid}`);
         if (ssid === 'Other:') {
             const ssid_input = document.getElementById('wifi-ssid-dropdown-input');
-            console.log(`ssid input element: ${ssid_input}`);
             ssid = ssid_input.value;
-            console.log(`post ssid: ${ssid}`);
         }
         const wifi_pwd = document.getElementById('wifi-pwd-value').textContent;
         const mqtt_addr = document.getElementById('wifi-mqtt-addr-value').textContent;
