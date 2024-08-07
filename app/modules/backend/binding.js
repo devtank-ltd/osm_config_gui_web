@@ -610,7 +610,6 @@ export class binding_t {
             console.log(e);
             return output;
         }
-        console.log(output);
         let comms_j = null;
         try {
             comms_j = JSON.parse(output);
