@@ -28,6 +28,7 @@ export class wifi_config_t {
 
     async populate_wifi_ssid_dropdown() {
         disable_interaction(true);
+        document.getElementById('wifi-ssid-dropdown-input').style.display = 'none';
         const loader = document.getElementById('loader');
         loader.style.opacity = '100';
         this.wifi_ssid_sel.innerHTML = '';
@@ -40,6 +41,21 @@ export class wifi_config_t {
             opt.text = this.comms_list[i].SSID;
             this.wifi_ssid_sel.add(opt);
         }
+        this.add_other_ssid_opt();
+    }
+
+    async add_other_ssid_opt() {
+        const otheropt = document.createElement('option');
+        otheropt.text = 'Other:';
+        otheropt.value = 'other';
+        this.wifi_ssid_sel.add(otheropt);
+        this.wifi_ssid_sel.addEventListener('change', () => {
+            if (this.wifi_ssid_sel.value === 'other') {
+                this.wifi_ssid_sel.nextElementSibling.style.display = 'inline';
+            } else {
+                this.wifi_ssid_sel.nextElementSibling.style.display = 'none';
+            }
+        })
     }
 
     async populate_wifi_fields() {
@@ -84,6 +100,7 @@ export class wifi_config_t {
                 this.wifi_ssid_sel.add(opt);
                 this.wifi_ssid_refresh = document.getElementById('wifi-ssid-refresh');
                 this.wifi_ssid_refresh.onclick = this.populate_wifi_ssid_dropdown;
+                this.add_other_ssid_opt();
                 break;
             case 'WiFi Password':
                 const wi = r.insertCell();
@@ -140,6 +157,13 @@ export class wifi_config_t {
         let ssid = document.getElementById('wifi-ssid-dropdown')
         ssid.selectedIndex.text;
         ssid = ssid.options[ssid.selectedIndex].text;
+        console.log(`pre ssid: ${ssid}`);
+        if (ssid === 'Other:') {
+            const ssid_input = document.getElementById('wifi-ssid-dropdown-input');
+            console.log(`ssid input element: ${ssid_input}`);
+            ssid = ssid_input.value;
+            console.log(`post ssid: ${ssid}`);
+        }
         const wifi_pwd = document.getElementById('wifi-pwd-value').textContent;
         const mqtt_addr = document.getElementById('wifi-mqtt-addr-value').textContent;
         const mqtt_user = document.getElementById('wifi-mqtt-user-value').textContent;
