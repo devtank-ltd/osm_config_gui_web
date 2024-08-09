@@ -108,7 +108,7 @@ export class wifi_config_t {
                 const is_locked = this.comms_list[i].encryption;
                 const imgpath = await this.get_sig_strength_img_path(signal_strength);
                 const opt = document.createElement('a');
-                opt.classList.add("wifi-opt");
+                opt.classList.add('wifi-opt');
                 opt.style.display = 'flex';
                 opt.style.alignItems = 'center';
                 opt.style.height = '15px';
