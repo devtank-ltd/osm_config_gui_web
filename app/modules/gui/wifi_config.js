@@ -63,8 +63,20 @@ export class wifi_config_t {
         return this.img;
     }
 
+    async get_lock_html() {
+        this.resp = await fetch('modules/gui/html/lock.html');
+        this.lock = await this.resp.text();
+        return this.lock;
+    }
+
     async update_wifi_ssid_selection(e) {
-        this.current_ssid_sel = e.target.innerText;
+        if (e.target.parentNode.className === 'lock-container') {
+            this.current_ssid_sel = e.target.parentNode.parentNode.innerText;
+        } else if (e.target.className === 'lock-container') {
+            this.current_ssid_sel = e.target.parentNode.innerText;
+        } else {
+            this.current_ssid_sel = e.target.innerText;
+        }
         if (this.current_ssid_sel === 'Other:') {
             this.wifi_ssid_sel.nextElementSibling.style.display = 'inline';
         } else {
@@ -93,14 +105,23 @@ export class wifi_config_t {
         if (this.comms_list) {
             for (let i = 0; i < this.comms_list.length; i += 1) {
                 const signal_strength = this.comms_list[i].RSSI;
+                const is_locked = this.comms_list[i].encryption;
                 const imgpath = await this.get_sig_strength_img_path(signal_strength);
                 const opt = document.createElement('a');
+                opt.classList.add("wifi-opt");
                 opt.style.display = 'flex';
+                opt.style.alignItems = 'center';
+                opt.style.height = '15px';
+                opt.style.gap = '10px';
                 opt.value = this.comms_list[i].SSID;
                 opt.innerHTML += this.comms_list[i].SSID;
                 opt.style.cursor = 'pointer';
                 opt.onclick = this.update_wifi_ssid_selection;
                 const div = document.createElement('div');
+                if (!is_locked.includes('OPEN')) {
+                    const lock = await this.get_lock_html();
+                    div.innerHTML += lock;
+                }
                 div.innerHTML += imgpath;
                 opt.innerHTML += div.innerHTML;
                 this.wifi_ssid_sel.appendChild(opt);
