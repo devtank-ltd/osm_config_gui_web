@@ -332,7 +332,19 @@ export class binding_t {
         await this.ll.write('measurements');
         const meas = await this.ll.read();
         const measurements = [];
-        const meas_split = meas.split('\n\r');
+        let meas_split = meas.split('\n\r');
+        let e_index = 0;
+        for (let s = 0; s < meas_split.length; s += 1) {
+            if (meas_split[s] === "") {
+                e_index += 1;
+            }
+            if (meas_split[s] === START_LINE) {
+                break;
+            }
+        }
+        if (e_index)
+            meas_split = meas_split.slice(e_index + 1);
+
         let start; let end; let regex; let interval; let interval_mins;
         meas_split.forEach((i, index) => {
             const m = i.split(/[\t]{1,2}/g);
