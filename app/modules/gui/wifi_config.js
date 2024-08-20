@@ -184,6 +184,8 @@ export class wifi_config_t {
                 this.wifi_ssid_dropbtn.onclick = this.show_dropdown_content;
                 if (this.current_written_ssid.length > 1) {
                     this.wifi_ssid_dropbtn.innerText = this.current_written_ssid;
+                } else {
+                    this.wifi_ssid_dropbtn.innerText = 'Select Network';
                 }
                 this.wifi_ssid_refresh = document.getElementById('wifi-ssid-refresh');
                 this.wifi_ssid_refresh.onclick = this.populate_wifi_ssid_dropdown;

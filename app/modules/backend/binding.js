@@ -1,6 +1,8 @@
 const END_LINE = '}============';
 const START_LINE = '============{';
 const MEAS_FAIL_STR = 'Failed to get measurement reading.';
+const DEBUG_CMD = /DEBUG:([0-9]+):.*/gm;
+
 
 function on_websocket_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
@@ -61,6 +63,12 @@ class low_level_socket_t {
     async wait_for_messages() {
         return new Promise((resolve) => {
             const check_messages = () => {
+                const dbg_match = this.msgs.match(DEBUG_CMD);
+                if (dbg_match) {
+                    dbg_match.forEach((i) => {
+                        this.msgs = this.msgs.replace(i, '');
+                    });
+                }
                 if (this.msgs.includes(END_LINE)) {
                     this.msgs = this.msgs.replace(END_LINE, '');
                     resolve();
