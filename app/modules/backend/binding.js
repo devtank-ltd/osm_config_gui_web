@@ -503,6 +503,14 @@ export class binding_t {
         return match;
     }
 
+    async disable_measurements() {
+        await this.do_cmd(`meas_enable 0`);
+    }
+
+    async enable_measurements() {
+        await this.do_cmd(`meas_enable 1`);
+    }
+
     get name() {
         return this.get_value('name');
     }

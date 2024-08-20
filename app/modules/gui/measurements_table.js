@@ -185,7 +185,9 @@ export class measurements_table_t {
         const table = btn.parentNode.parentNode.parentNode.parentElement;
         const row_index = e.srcElement.parentElement.parentNode.rowIndex;
         const meas = table.rows[row_index].cells[0].textContent;
+        await this.dev.disable_measurements();
         const val = await this.dev.get_value(`get_meas ${meas}`);
+        await this.dev.enable_measurements();
         const last_val_col = table.rows[row_index].cells[last_val_index];
         last_val_col.textContent = val;
         loader.style.opacity = '0';
