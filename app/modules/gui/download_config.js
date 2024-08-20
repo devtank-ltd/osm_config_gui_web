@@ -158,6 +158,7 @@ export class save_configuration_t {
             json_pop.comms.mqtt_addr = await this.comms.mqtt_addr;
             json_pop.comms.mqtt_user = await this.comms.mqtt_user;
             json_pop.comms.mqtt_pwd = await this.comms.mqtt_pwd;
+            json_pop.comms.mqtt_path = await this.comms.mqtt_path;
             json_pop.comms.mqtt_port = await this.comms.mqtt_port;
             json_pop.comms.mqtt_sch = await this.comms.mqtt_sch;
         }
