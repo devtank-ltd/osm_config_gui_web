@@ -66,11 +66,15 @@ class low_level_socket_t {
                 const dbg_match = this.msgs.match(DEBUG_CMD);
                 if (dbg_match) {
                     dbg_match.forEach((i) => {
-                        this.msgs = this.msgs.replace(i + '\n', '');
+                        if (i.includes('\n\r')) {
+                            this.msgs = this.msgs.replace(i + '\n\r', '');
+                        } else {
+                            this.msgs = this.msgs.replace(i, '');
+                        }
                     });
                 }
                 if (this.msgs.includes(END_LINE)) {
-                    this.msgs = this.msgs.replace(END_LINE + '\n', '');
+                    this.msgs = this.msgs.replace(END_LINE + '\n\r', '');
                     resolve();
                 } else {
                     setTimeout(check_messages, 100);
