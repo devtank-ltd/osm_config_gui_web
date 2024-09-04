@@ -193,7 +193,7 @@ export class wifi_config_t {
                 break;
             case 'WiFi Password':
                 const wi = r.insertCell();
-                wi.innerText = wifi_pwd;
+                wi.innerHTML = wifi_pwd;
                 wi.id = 'wifi-pwd-value';
                 wi.contentEditable = true;
                 break;

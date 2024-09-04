@@ -7,7 +7,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 class config_gui_test_t {
     constructor(driver) {
         this.driver = driver;
-        this.spawn_virtual_osm = this.spawn_virtual_osm.bind(this);
     }
 
     async run_test(headless) {
@@ -34,7 +33,6 @@ class config_gui_test_t {
 
             const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
             await disconnect_btn.click();
-            await sleep(5000);
         } catch (e) {
             console.log(e)
          } finally {
@@ -86,9 +84,20 @@ class config_gui_test_t {
         await sleep(5000);
     }
 
+    async select_network() {
+        const refresh = await this.driver.findElement(By.id("wifi-ssid-refresh"));
+        await refresh.click();
+        await sleep(3000);
+        const dropdown_btn = await this.driver.findElement(By.id("wifi-ssid-dropbtn"));
+        await dropdown_btn.click();
+        const dropdown = await this.driver.findElement(By.id("wifi-ssid-dropdown-content"));
+        const net = await dropdown.findElements(By.tagName('a'));
+        await net[0].click();
+    }
+
 
     async fill_wifi_config_table() {
-        this.driver.findElement(By.id("wifi-ssid-value")).sendKeys("none");
+        await this.select_network();
         this.driver.findElement(By.id("wifi-pwd-value")).sendKeys("none");
         this.driver.findElement(By.id("wifi-mqtt-addr-value")).sendKeys("mqtt.addr");
         this.driver.findElement(By.id("wifi-mqtt-user-value")).sendKeys("mqtt-user");
@@ -128,7 +137,7 @@ class config_gui_test_t {
 
         await sleep(1000);
 
-        this.driver.findElement(By.id("console-cmd-input")).sendKeys("wipe");
+        this.driver.findElement(By.id("console-cmd-input")).sendKeys("j_comms_cfg");
         const send_btn = await this.driver.findElement(By.id('console-send-cmd-btn'));
         send_btn.click();
         await sleep(1000);
@@ -137,7 +146,6 @@ class config_gui_test_t {
     async lw_comms_fw_update() {
         const comms_btn = await this.driver.findElement(By.id('comms-btn'));
         await comms_btn.click();
-
 
         const confirm = await this.driver.switchTo().alert();
         const confirm_text = await confirm.getText();
