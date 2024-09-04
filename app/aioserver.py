@@ -10,13 +10,18 @@ import string
 import os
 import signal
 import ssl
-
+import aiomultiprocess
+from aiomultiprocess import Worker
 from aiohttp import web
 import asyncio
+import psutil
+
+aiomultiprocess.set_start_method("fork")
 
 event_loop =  asyncio.new_event_loop()
 tcpsockets = []
-all_processes = {}
+subprocesses = {}
+multiprocesses = {}
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -40,20 +45,20 @@ class virtual_osm:
         self.port = port
         self._logger = logger
 
-    def gen_virtual_osm_instance(self):
+    async def gen_virtual_osm_instance(self):
         rstr = self._random_str()
         self.loc = f"/tmp/osm_{rstr}/"
 
         linux_elf = f"{PATH}/firmware.elf"
-
+        pid = None
         if os.path.exists(linux_elf):
             cmd = [f"DEBUG=1 OSM_LOC={self.loc} USE_PORT={self.port} {linux_elf}"]
-            self._spawn_virtual_osm(cmd, self.port)
+            pid = self._spawn_virtual_osm(cmd, self.port)
             time.sleep(2)
         else:
             self._logger.debug("Virtual OSM could not be found.")
 
-        return self.port
+        return pid
 
     @staticmethod
     def _random_str():
@@ -63,8 +68,7 @@ class virtual_osm:
 
     def _spawn_virtual_osm(self, cmd, port):
         self.vosm_subp = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-        all_processes[port] = self.vosm_subp
-        return self.vosm_subp
+        return self.vosm_subp.pid
 
 
 class osm_tcp_client:
@@ -119,6 +123,8 @@ class http_server:
             self._logger = logger
             if is_verbose:
                 logging.basicConfig(level=logging.DEBUG)
+            else:
+                logging.basicConfig(level=logging.INFO)
         self._logger.info(f"Running on {self.host} on port {self.port}")
 
     @staticmethod
@@ -142,14 +148,17 @@ class http_server:
 
     async def spawn_osm(self, request):
         port = self.gen_random_port()
-
         vosm = virtual_osm(port, self._logger)
-        osm = vosm.gen_virtual_osm_instance()
+        osm =  Worker(target=vosm.gen_virtual_osm_instance)
+        osm.start()
+        res = await osm.join()
+        subprocesses[port] = res + 1
+
 
         ws = web.WebSocketResponse()
         await ws.prepare(request)
 
-        tcp_client = osm_tcp_client(osm, self.host, self._logger)
+        tcp_client = osm_tcp_client(port, self.host, self._logger)
         svr = tcp_client.osm_svr()
         if not svr:
             return False
@@ -176,13 +185,11 @@ class http_server:
 
     def close_socket(self, port, client):
         client.close()
-        process = all_processes[port]
-        fw_pid = int(process.pid)
-        bash_pid = fw_pid + 1
-        os.kill(bash_pid, signal.SIGINT)
-        status = os.wait()
-        self._logger.debug(f"Process terminated with pid {status[0]}")
-        return status
+        subp = subprocesses[port]
+        p = psutil.Process(subp)
+        t = p.terminate()
+        self._logger.info(f"Penguin firmware process: {p.wait()}.")
+        del subp
 
     async def get_index(self, request):
         return web.FileResponse(os.path.join(WEBROOT, 'index.html'))
