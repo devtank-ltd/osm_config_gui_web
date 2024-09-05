@@ -11,7 +11,7 @@ import os
 import signal
 import ssl
 import aiomultiprocess
-from aiomultiprocess import Worker
+from aiomultiprocess import Worker, Process
 from aiohttp import web
 import asyncio
 import psutil
@@ -145,14 +145,12 @@ class http_server:
         event_loop.run_until_complete(site.start())
         event_loop.run_forever()
 
-
     async def spawn_osm(self, request):
         port = self.gen_random_port()
         vosm = virtual_osm(port, self._logger)
-        osm =  Worker(target=vosm.gen_virtual_osm_instance)
-        osm.start()
-        res = await osm.join()
-        subprocesses[port] = res + 1
+        async with aiomultiprocess.Pool() as pool:
+            res = await pool.apply(vosm.gen_virtual_osm_instance)
+        subprocesses[port] = res
 
 
         ws = web.WebSocketResponse()
@@ -177,7 +175,7 @@ class http_server:
             elif msg.type == web.WSMsgType.ERROR:
                 self.close_socket(port, tcp_client)
                 self._logger.debug('ws connection closed with exception %s' %
-                    ws.exception())
+                ws.exception())
 
         self.close_socket(port, tcp_client)
         await ws.close()
@@ -186,10 +184,16 @@ class http_server:
     def close_socket(self, port, client):
         client.close()
         subp = subprocesses[port]
-        p = psutil.Process(subp)
-        t = p.terminate()
-        self._logger.info(f"Penguin firmware process: {p.wait()}.")
-        del subp
+        try:
+            p = psutil.Process(subp)
+            children = p.children(recursive=True)
+            for child in children:
+                child.terminate()
+            p.terminate()
+            self._logger.info(f"Penguin firmware process exited: {subp}")
+        except Exception as e:
+            self._logger.error(f"Could not terminate process: {e}")
+        del subprocesses[port]
 
     async def get_index(self, request):
         return web.FileResponse(os.path.join(WEBROOT, 'index.html'))

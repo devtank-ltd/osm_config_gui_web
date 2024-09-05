@@ -17,6 +17,7 @@ class config_gui_test_t {
                 options.addArguments('--headless=new')
             }
             options.addArguments('--no-sandbox')
+            options.addArguments('--incognito')
 
             this.driver = await new Builder().setChromeOptions(options).build()
             await this.driver.get('http://localhost:8000');
@@ -155,7 +156,22 @@ class config_gui_test_t {
 }
 
 
-let driver;
-const tester = new config_gui_test_t(driver);
-const is_headless = false;
-tester.run_test(is_headless);
+async function start_test() {
+    let driver;
+    const tester = new config_gui_test_t(driver);
+    const is_headless = true;
+    tester.run_test(is_headless);
+}
+
+
+async function run_tests() {
+    const thread_count = 5;
+    const tasks = [];
+
+    for (let i = 0; i < thread_count; i += 1) {
+        tasks.push(start_test());
+}
+    await Promise.all(tasks);
+}
+
+run_tests();
