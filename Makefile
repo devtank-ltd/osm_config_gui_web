@@ -62,13 +62,14 @@ dev_fw: $(WEBROOT_BUILD_DIR)/fw_releases
 	cp $(PROJ_DIR)/fw_releases/* $(WEBROOT_BUILD_DIR)/fw_releases/
 
 webhost_bg: webroot
-	cd $(BUILD_DIR); \
-	python3 ./aioserver.py &
+	if [ -e $(BUILD_DIR)/aioserver.pid ]; then kill -9 `cat $(BUILD_DIR)/aioserver.pid`; fi
+	(cd $(BUILD_DIR); python3 ./aioserver.py) & echo $$! > $(BUILD_DIR)/aioserver.pid
+	echo aioserver PID: `cat $(BUILD_DIR)/aioserver.pid`
 
 webtest: webhost_bg
 	cd tests; \
 	node config_gui_test.js
-	ps -HAf | grep aioserver | tail -1 | awk '{print $$2}' | xargs kill -9
+	kill -9 $((cat $(BUILD_DIR)/aioserver.pid))
 
 include $(OSM_DIR)/Makefile
 
