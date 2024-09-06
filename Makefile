@@ -26,7 +26,7 @@ $(eval $(call WEBSERVE_BUILT_FILES,WEBSERVE_STYLES,$(WEBSERVE_DIR)/styles))
 
 FW_VERSION_INFO := $(WEBROOT_BUILD_DIR)/fw_releases/latest_fw_info.json
 
-webroot: $(WEBROOT_BUILD_DIR)/index.html $(WEBROOT_BUILD_DIR)/favicon.ico $(WEBSERVE_GUI) $(WEBSERVE_BACKEND) $(WEBSERVE_IMG) $(WEBSERVE_STYLES) $(BUILD_DIR)/.webroot/libs $(BUILD_DIR)/aioserver.py $(BUILD_DIR)/.webroot/fw_releases
+webroot: $(WEBROOT_BUILD_DIR)/index.html $(BUILD_DIR)/firmware.elf $(WEBROOT_BUILD_DIR)/favicon.ico $(WEBSERVE_GUI) $(WEBSERVE_BACKEND) $(WEBSERVE_IMG) $(WEBSERVE_STYLES) $(BUILD_DIR)/.webroot/libs $(BUILD_DIR)/aioserver.py $(BUILD_DIR)/.webroot/fw_releases
 
 .PHONY: webhost
 
@@ -70,11 +70,13 @@ webtest: webhost_bg
 	node config_gui_test.js
 	ps -HAf | grep aioserver | tail -1 | awk '{print $$2}' | xargs kill -9
 
-$(BUILD_DIR)/firmware.elf:
-	$(MAKE) -C $(OSM_DIR) penguin_at_wifi
+include $(OSM_DIR)/Makefile
+
+$(BUILD_DIR)/firmware.elf: $(OSM_BUILD_DIR)/penguin_at_wifi/firmware.elf
 	cp $(OSM_BUILD_DIR)/penguin_at_wifi/firmware.elf $(BUILD_DIR)/firmware.elf
 	cp -r $(OSM_BUILD_DIR)/penguin_at_wifi/peripherals $(BUILD_DIR)/peripherals
 
 clean:
+	rm -rf $(OSM_BUILD_DIR)
 	rm -rf $(BUILD_DIR)
 
