@@ -1,12 +1,22 @@
 const { By, Builder, Browser, until, Key } = require('selenium-webdriver');
 const {Options} = require("selenium-webdriver/chrome.js");
 const assert = require("assert");
+require('events').EventEmitter.defaultMaxListeners = 30;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const TIMEOUT = 5000;
 
 class config_gui_test_t {
     constructor(driver) {
         this.driver = driver;
+    }
+
+    async get_element(ele_id) {
+        try {
+            return await this.driver.wait(until.elementLocated(By.id(ele_id)), TIMEOUT);
+        } catch {
+            return null;
+        }
     }
 
     async run_test(headless) {
@@ -32,10 +42,10 @@ class config_gui_test_t {
             await this.fill_wifi_config_table();
             await this.switch_to_console_tab();
 
-            const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
+            const disconnect_btn = await this.get_element('global-disconnect');
             await disconnect_btn.click();
         } catch (e) {
-            console.log(e)
+            console.log(e);
          } finally {
             await this.driver.quit();
         }
@@ -60,9 +70,9 @@ class config_gui_test_t {
 
             await this.lw_comms_fw_update();
 
-            const disconnect_btn = await this.driver.findElement(By.id('global-disconnect'));
+            const disconnect_btn = await this.get_element('global-disconnect');
             await disconnect_btn.click();
-            await sleep(5000);
+            await sleep(TIMEOUT);
 
         } catch (e) {
             console.log(e)
@@ -72,80 +82,102 @@ class config_gui_test_t {
     }
 
     async connect_real_osm() {
-        const connect_btn = await this.driver.findElement(By.id('main-page-connect'));
+        const connect_btn = await this.get_element('main-page-connect');
         await connect_btn.click();
-
-        await sleep(2000);
-
+        await sleep(TIMEOUT);
     }
 
     async spawn_virtual_osm() {
-        const connect_btn = await this.driver.findElement(By.id('main-page-websocket-connect'));
+        const connect_btn = await this.get_element('main-page-websocket-connect');
         await connect_btn.click();
-        await sleep(5000);
+        await sleep(TIMEOUT);
+        await this.driver.wait(until.elementLocated(By.id('otheropt')), TIMEOUT);
     }
 
     async select_network() {
-        const refresh = await this.driver.findElement(By.id("wifi-ssid-refresh"));
+        const refresh = await this.get_element("wifi-ssid-refresh");
         await refresh.click();
-        await sleep(3000);
-        const dropdown_btn = await this.driver.findElement(By.id("wifi-ssid-dropbtn"));
+        await sleep(TIMEOUT);
+        const opt = await this.get_element('wifi-opt0');
+        const dropdown_btn = await this.get_element("wifi-ssid-dropbtn");
         await dropdown_btn.click();
-        const dropdown = await this.driver.findElement(By.id("wifi-ssid-dropdown-content"));
-        const net = await dropdown.findElements(By.tagName('a'));
-        await net[0].click();
+        const dropdown = await this.get_element("wifi-ssid-dropdown-content");
+        await sleep(TIMEOUT);
+        if (opt) {
+            await opt.click();
+        } else {
+            console.log('Failed to get network');
+        }
     }
 
 
     async fill_wifi_config_table() {
         await this.select_network();
-        this.driver.findElement(By.id("wifi-pwd-value")).sendKeys("none");
-        this.driver.findElement(By.id("wifi-mqtt-addr-value")).sendKeys("mqtt.addr");
-        this.driver.findElement(By.id("wifi-mqtt-user-value")).sendKeys("mqtt-user");
-        this.driver.findElement(By.id("wifi-mqtt-pwd-value")).sendKeys("mqtt-pwd");
-        this.driver.findElement(By.id("wifi-mqtt-port-value")).click();
-        this.driver.findElement(By.id("wifi-mqtt-port-value")).clear();
-        this.driver.findElement(By.id("wifi-mqtt-port-value")).sendKeys("443");
-        this.driver.findElement(By.id("mqtt-scheme-dropdown")).sendKeys('Websockets (TLS no certs)');
+        const wifi_pwd = await this.get_element("wifi-pwd-value");
+        wifi_pwd.sendKeys("none");
+        const mqtt_addr = await this.get_element("wifi-mqtt-addr-value");
+        mqtt_addr.sendKeys("mqtt.addr");
+        const mqtt_user = await this.get_element("wifi-mqtt-user-value");
+        mqtt_user.sendKeys("mqtt-user");
+        const mqtt_pwd = await this.get_element("wifi-mqtt-pwd-value");
+        mqtt_pwd.sendKeys("mqtt-pwd");
+        const mqtt_port = await this.get_element("wifi-mqtt-port-value");
+        mqtt_port.click();
+        mqtt_port.clear();
+        mqtt_port.sendKeys("443");
+        const mqtt_sch = await this.get_element("mqtt-scheme-dropdown");
+        mqtt_sch.sendKeys('Websockets (TLS no certs)');
 
-        const send_btn = await this.driver.findElement(By.id('wifi-send-config'));
+        const send_btn = await this.get_element('wifi-send-config');
         await send_btn.click();
-        await sleep(3000);
+        await sleep(TIMEOUT);
     }
 
     async set_serial_num() {
-        this.driver.findElement(By.id("serial-num-input")).sendKeys("osm_test_serial_001");
-        await sleep(2000);
+        const serial = await this.get_element("serial-num-input");
+        serial.sendKeys("osm_test_serial_001");
+        await this.focus_out();
+        await sleep(TIMEOUT);
     }
 
     async set_name() {
-        this.driver.findElement(By.id("name-input")).click();
-        this.driver.findElement(By.id("name-input")).clear();
-        this.driver.findElement(By.id("name-input")).sendKeys("osm_test_name");
-        await sleep(2000);
+        const name_input = await this.get_element("name-input");
+        await name_input.click();
+        await name_input.clear();
+        await name_input.sendKeys("osm_test_name");
+        await this.focus_out();
+        await sleep(TIMEOUT);
+    }
+
+    async focus_out() {
+        const click = this.driver.findElement(By.id("top-level-body"));
+        const actions = this.driver.actions({async: true});
+        await actions.move({origin: click}).click().perform();
     }
 
     async set_interval_mins() {
-        this.driver.findElement(By.id("home-uplink-input")).sendKeys("15");
-        const submit_btn = await this.driver.findElement(By.id('home-uplink-submit'));
+        const home_input = await this.get_element("home-uplink-input")
+        home_input.sendKeys("15");
+        const submit_btn = await this.get_element('home-uplink-submit');
         await submit_btn.click();
-        await sleep(2000);
+        await sleep(TIMEOUT);
     }
 
     async switch_to_console_tab() {
-        const console_btn = await this.driver.findElement(By.id('console-tab'));
+        const console_btn = await this.get_element('console-tab');
         await console_btn.click();
 
-        await sleep(1000);
+        await sleep(TIMEOUT);
 
-        this.driver.findElement(By.id("console-cmd-input")).sendKeys("j_comms_cfg");
-        const send_btn = await this.driver.findElement(By.id('console-send-cmd-btn'));
+        const console_input = await this.get_element("console-cmd-input")
+        console_input.sendKeys("j_comms_cfg");
+        const send_btn = await this.get_element('console-send-cmd-btn');
         send_btn.click();
-        await sleep(1000);
+        await sleep(TIMEOUT);
     }
 
     async lw_comms_fw_update() {
-        const comms_btn = await this.driver.findElement(By.id('comms-btn'));
+        const comms_btn = await this.get_element('comms-btn');
         await comms_btn.click();
 
         const confirm = await this.driver.switchTo().alert();
@@ -165,7 +197,7 @@ async function start_test() {
 
 
 async function run_tests() {
-    const thread_count = 5;
+    const thread_count = 10;
     const tasks = [];
 
     for (let i = 0; i < thread_count; i += 1) {
