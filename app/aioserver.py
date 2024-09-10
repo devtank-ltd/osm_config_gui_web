@@ -10,13 +10,10 @@ import string
 import os
 import signal
 import ssl
-import aiomultiprocess
-from aiomultiprocess import Worker, Process
 from aiohttp import web
 import asyncio
 import psutil
 
-aiomultiprocess.set_start_method("fork")
 
 event_loop =  asyncio.new_event_loop()
 tcpsockets = []
@@ -54,10 +51,9 @@ class virtual_osm:
         if os.path.exists(linux_elf):
             cmd = [f"DEBUG=1 OSM_LOC={self.loc} USE_PORT={self.port} {linux_elf}"]
             pid = self._spawn_virtual_osm(cmd, self.port)
-            time.sleep(2)
+            await asyncio.sleep(2)
         else:
             self._logger.debug("Virtual OSM could not be found.")
-
         return pid
 
     @staticmethod
@@ -148,10 +144,8 @@ class http_server:
     async def spawn_osm(self, request):
         port = self.gen_random_port()
         vosm = virtual_osm(port, self._logger)
-        async with aiomultiprocess.Pool() as pool:
-            res = await pool.apply(vosm.gen_virtual_osm_instance)
+        res = await vosm.gen_virtual_osm_instance()
         subprocesses[port] = res
-
 
         ws = web.WebSocketResponse()
         await ws.prepare(request)

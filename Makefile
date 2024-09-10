@@ -68,7 +68,7 @@ webhost_bg: webroot
 
 webtest: webhost_bg
 	cd tests; \
-	node config_gui_test.js
+	node config_gui_test.js --trace-warnings
 	kill -9 $((cat $(BUILD_DIR)/aioserver.pid))
 
 include $(OSM_DIR)/Makefile
