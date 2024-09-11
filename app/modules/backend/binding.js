@@ -3,7 +3,6 @@ const START_LINE = '============{';
 const MEAS_FAIL_STR = 'Failed to get measurement reading.';
 const DEBUG_CMD = /DEBUG:([0-9]+):.*/gm;
 
-
 function on_websocket_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
     const confirm = document.getElementById('osm-disconnect-confirm');
@@ -67,14 +66,14 @@ class low_level_socket_t {
                 if (dbg_match) {
                     dbg_match.forEach((i) => {
                         if (i.includes('\n\r')) {
-                            this.msgs = this.msgs.replace(i + '\n\r', '');
+                            this.msgs = this.msgs.replace(`${i}\n\r`, '');
                         } else {
                             this.msgs = this.msgs.replace(i, '');
                         }
                     });
                 }
                 if (this.msgs.includes(END_LINE)) {
-                    this.msgs = this.msgs.replace(END_LINE + '\n\r', '');
+                    this.msgs = this.msgs.replace(`${END_LINE}\n\r`, '');
                     resolve();
                 } else {
                     setTimeout(check_messages, 100);
@@ -339,16 +338,16 @@ export class binding_t {
         let meas_split = meas.split('\n\r');
         let e_index = 0;
         for (let s = 0; s < meas_split.length; s += 1) {
-            if (meas_split[s] === "") {
+            if (meas_split[s] === '') {
                 e_index += 1;
             }
             if (meas_split[s] === START_LINE) {
                 break;
             }
         }
-        if (e_index)
+        if (e_index) {
             meas_split = meas_split.slice(e_index + 1);
-
+        }
         let start; let end; let regex; let interval; let interval_mins;
         meas_split.forEach((i, index) => {
             const m = i.split(/[\t]{1,2}/g);
@@ -508,11 +507,11 @@ export class binding_t {
     }
 
     async disable_measurements() {
-        await this.do_cmd(`meas_enable 0`);
+        await this.do_cmd('meas_enable 0');
     }
 
     async enable_measurements() {
-        await this.do_cmd(`meas_enable 1`);
+        await this.do_cmd('meas_enable 1');
     }
 
     get name() {

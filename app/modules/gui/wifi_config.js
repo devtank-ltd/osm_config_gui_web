@@ -109,7 +109,7 @@ export class wifi_config_t {
                 const imgpath = await this.get_sig_strength_img_path(signal_strength);
                 const opt = document.createElement('a');
                 opt.classList.add('wifi-opt');
-                opt.id = `wifi-opt${i}`
+                opt.id = `wifi-opt${i}`;
                 opt.style.display = 'flex';
                 opt.style.alignItems = 'center';
                 opt.style.height = '15px';
