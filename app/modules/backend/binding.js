@@ -681,8 +681,11 @@ export class binding_t {
             this.ftma_types = await this.do_cmd(`get_meas_type ${meas}`);
             const s = this.ftma_types.split(': ');
             const io = s[0].replace(START_LINE, '');
-            if (s[1] === 'IO_READING\n' || s[1] === 'PULSE_COUNT\n' || s[1] === 'W1_PROBE\n') {
-                io_list.push(io);
+            const io_type = s[1];
+            if (io_type) {
+                if (io_type.includes('IO_READING') || io_type.includes('PULSE_COUNT') || io_type.includes('W1_PROBE')) {
+                    io_list.push(io);
+                }
             }
         }
         return io_list;
