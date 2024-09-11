@@ -545,7 +545,7 @@ export class binding_t {
 
     async get_value(cmd) {
         const res = await this.do_cmd(cmd);
-        if (!res || res === MEAS_FAIL_STR) {
+        if (!res || res.includes(MEAS_FAIL_STR)) {
             return 'n/a';
         }
         if (res.includes(':')) {
