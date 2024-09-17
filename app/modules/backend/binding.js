@@ -1,6 +1,7 @@
 const END_LINE = '}============';
 const START_LINE = '============{';
 const MEAS_FAIL_STR = 'Failed to get measurement reading.';
+const DEBUG_CMD = /DEBUG:([0-9]+):.*/gm;
 
 function on_websocket_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
@@ -61,8 +62,18 @@ class low_level_socket_t {
     async wait_for_messages() {
         return new Promise((resolve) => {
             const check_messages = () => {
+                const dbg_match = this.msgs.match(DEBUG_CMD);
+                if (dbg_match) {
+                    dbg_match.forEach((i) => {
+                        if (i.includes('\n\r')) {
+                            this.msgs = this.msgs.replace(`${i}\n\r`, '');
+                        } else {
+                            this.msgs = this.msgs.replace(i, '');
+                        }
+                    });
+                }
                 if (this.msgs.includes(END_LINE)) {
-                    this.msgs = this.msgs.replace(END_LINE, '');
+                    this.msgs = this.msgs.replace(`${END_LINE}\n\r`, '');
                     resolve();
                 } else {
                     setTimeout(check_messages, 100);
@@ -324,7 +335,19 @@ export class binding_t {
         await this.ll.write('measurements');
         const meas = await this.ll.read();
         const measurements = [];
-        const meas_split = meas.split('\n\r');
+        let meas_split = meas.split('\n\r');
+        let e_index = 0;
+        for (let s = 0; s < meas_split.length; s += 1) {
+            if (meas_split[s] === '') {
+                e_index += 1;
+            }
+            if (meas_split[s] === START_LINE) {
+                break;
+            }
+        }
+        if (e_index) {
+            meas_split = meas_split.slice(e_index + 1);
+        }
         let start; let end; let regex; let interval; let interval_mins;
         meas_split.forEach((i, index) => {
             const m = i.split(/[\t]{1,2}/g);
@@ -483,6 +506,14 @@ export class binding_t {
         return match;
     }
 
+    async disable_measurements() {
+        await this.do_cmd('meas_enable 0');
+    }
+
+    async enable_measurements() {
+        await this.do_cmd('meas_enable 1');
+    }
+
     get name() {
         return this.get_value('name');
     }
@@ -513,7 +544,7 @@ export class binding_t {
 
     async get_value(cmd) {
         const res = await this.do_cmd(cmd);
-        if (!res || res === MEAS_FAIL_STR) {
+        if (!res || res.includes(MEAS_FAIL_STR)) {
             return 'n/a';
         }
         if (res.includes(':')) {
@@ -602,6 +633,24 @@ export class binding_t {
         await this.ll.read('Flash successfully written');
     }
 
+    async network_list() {
+        let output = null;
+        try {
+            output = await this.do_cmd('comms_list');
+        } catch (e) {
+            console.log(e);
+            return output;
+        }
+        let comms_j = null;
+        try {
+            comms_j = JSON.parse(output);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+        return comms_j;
+    }
+
     async comms_type() {
         const comms_config = await this.do_cmd('j_comms_cfg');
         const comms_formatted = await this.insert_backslash(comms_config);
@@ -631,8 +680,11 @@ export class binding_t {
             this.ftma_types = await this.do_cmd(`get_meas_type ${meas}`);
             const s = this.ftma_types.split(': ');
             const io = s[0].replace(START_LINE, '');
-            if (s[1] === 'IO_READING\n' || s[1] === 'PULSE_COUNT\n' || s[1] === 'W1_PROBE\n') {
-                io_list.push(io);
+            const io_type = s[1];
+            if (io_type) {
+                if (io_type.includes('IO_READING') || io_type.includes('PULSE_COUNT') || io_type.includes('W1_PROBE')) {
+                    io_list.push(io);
+                }
             }
         }
         return io_list;

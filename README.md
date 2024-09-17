@@ -37,3 +37,16 @@ The code for the front end of the application is found in app/modules/gui.
 The HTML that these scripts use is found in app/modules/gui/html.
 
 The CSS is found in app/modules/styles.
+
+## Testing
+
+Tests are found in the osm\_config\_gui\_web/tests directory
+
+Enter `make webtest` in the root directory to run a complete test.
+
+You will need an environment with npm and node installed.
+
+Verify these are installed with `node -v` and `npm -v`
+
+The tests use Selenium, therefore, you must run `npm install selenium-webdriver`
+

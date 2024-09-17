@@ -21,12 +21,12 @@ export class measurements_table_t {
             HUM2: 'Humidity (Particulate Sensor)',
             HUMI: 'Humidity',
             BAT: 'Battery',
-            CNT1: 'Pulsecount',
-            CNT2: 'Pulsecount',
+            CNT1: 'Pulsecount Channel 1',
+            CNT2: 'Pulsecount Channel 2',
             LGHT: 'Light',
             SND: 'Sound',
-            IO01: 'Pulsecount',
-            IO02: 'Pulsecount',
+            IO01: 'Pulsecount (IO Watch Channel 1)',
+            IO02: 'Pulsecount (IO Watch Channel 2)',
         };
     }
 
@@ -179,16 +179,18 @@ export class measurements_table_t {
     async insert_last_value(e) {
         await disable_interaction(true);
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         const last_val_index = 2;
         const btn = e.target;
-        const table = btn.offsetParent.offsetParent;
+        const table = btn.parentNode.parentNode.parentNode.parentElement;
         const row_index = e.srcElement.parentElement.parentNode.rowIndex;
         const meas = table.rows[row_index].cells[0].textContent;
+        await this.dev.disable_measurements();
         const val = await this.dev.get_value(`get_meas ${meas}`);
+        await this.dev.enable_measurements();
         const last_val_col = table.rows[row_index].cells[last_val_index];
         last_val_col.textContent = val;
-        loader.style.display = 'none';
+        loader.style.opacity = '0';
         await disable_interaction(false);
     }
 

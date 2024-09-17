@@ -15,7 +15,7 @@ export class save_configuration_t {
     async save_config() {
         await disable_interaction(true);
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         const ios_regex = /\IO (?<io>[0-9]{2}) : +(\[(?<specials_avail>[A-Za-z0-9 \|]+)\])? ((USED (?<special_used>[A-Za-z0-9]+)( (?<edge>F|R|B))?)|(?<dir>IN|OUT)) (?<pupd>DOWN|UP|NONE|D|U|N)( = (?<level>ON|OFF))?/;
 
         const json_pop = {
@@ -158,9 +158,9 @@ export class save_configuration_t {
             json_pop.comms.mqtt_addr = await this.comms.mqtt_addr;
             json_pop.comms.mqtt_user = await this.comms.mqtt_user;
             json_pop.comms.mqtt_pwd = await this.comms.mqtt_pwd;
+            json_pop.comms.mqtt_path = await this.comms.mqtt_path;
             json_pop.comms.mqtt_port = await this.comms.mqtt_port;
             json_pop.comms.mqtt_sch = await this.comms.mqtt_sch;
-
         }
 
         json_pop.cts.CC1.midpoint = await this.dev.get_cc_mp(1);
@@ -203,7 +203,7 @@ export class save_configuration_t {
         const json_final = JSON.parse(json_str);
 
         this.create_download(json_final);
-        loader.style.display = 'none';
+        loader.style.opacity = '0';
         await disable_interaction(false);
     }
 

@@ -42,7 +42,7 @@ export class home_tab_t {
 
     async insert_homepage(returned) {
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         await disable_interaction(true);
         const doc = document.getElementById('main-page-body');
         const response = await fetch('modules/gui/html/home_page.html');
@@ -78,7 +78,7 @@ export class home_tab_t {
             fw_table.style.gridColumnEnd = 3;
         } else if (comms_type && comms_type.includes('WIFI')) {
             this.comms = new wifi_comms_t(this.dev);
-            const wifi = new wifi_config_t(this.comms);
+            const wifi = new wifi_config_t(this.dev, this.comms);
             await wifi.populate_wifi_fields();
             await wifi.add_listeners();
         } else if (!comms_type) {
@@ -100,7 +100,7 @@ export class home_tab_t {
 
         await this.add_event_listeners();
         await disable_interaction(false);
-        loader.style.display = 'none';
+        loader.style.opacity = '0';
     }
 
     async load_name() {

@@ -17,7 +17,7 @@ export class load_configuration_t {
     load_gui_with_config(content) {
         disable_interaction(true);
         const loader = document.getElementById('loader');
-        loader.style.display = 'block';
+        loader.style.opacity = '100';
         this.dev.wipe()
             .then(() => {
                 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -73,6 +73,7 @@ export class load_configuration_t {
                     this.mqtt_user = this.content.comms.mqtt_user;
                     this.mqtt_pwd = this.content.comms.mqtt_pwd;
                     this.mqtt_port = this.content.comms.mqtt_port;
+                    this.mqtt_path = this.content.comms.mqtt_path;
                     this.mqtt_sch = this.content.comms.mqtt_sch;
                     await this.dev.do_cmd(`comms_config wifi_ssid ${this.wifi_ssid}`);
                     await this.dev.do_cmd(`comms_config wifi_pwd ${this.wifi_pwd}`);
@@ -80,6 +81,7 @@ export class load_configuration_t {
                     await this.dev.do_cmd(`comms_config mqtt_user ${this.mqtt_user}`);
                     await this.dev.do_cmd(`comms_config mqtt_pwd ${this.mqtt_pwd}`);
                     await this.dev.do_cmd(`comms_config mqtt_port ${this.mqtt_port}`);
+                    await this.dev.do_cmd(`comms_config mqtt_path ${this.mqtt_path}`);
                     await this.dev.do_cmd(`comms_config mqtt_sch ${this.mqtt_sch}`);
                 }
             })
@@ -98,7 +100,7 @@ export class load_configuration_t {
             .then(() => this.dev.save())
             .then(() => this.dev.do_cmd(`serial_num ${this.content.serial_num}`))
             .then(() => {
-                loader.style.display = 'none';
+                loader.style.opacity = '0';
                 disable_interaction(false);
                 window.location.reload();
             });

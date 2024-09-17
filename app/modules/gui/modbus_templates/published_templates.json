@@ -3,6 +3,8 @@
         "countis_e53.json",
         "rayleigh_rif.json",
         "wt901c-rs485.json",
-        "qm30vt2.json"
+        "qm30vt2.json",
+        "qm31vt2.json",
+        "rayleigh_d240.json"
     ]
 }

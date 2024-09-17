@@ -27,10 +27,10 @@ export class current_clamp_t {
         if (confirm('Ensure no live current going through the OSM.')) {
             await disable_interaction(true);
             const loader = document.getElementById('loader');
-            loader.style.display = 'block';
+            loader.style.opacity = '100';
             await this.dev.cc_cal();
             await this.create_cc_table();
-            loader.style.display = 'none';
+            loader.style.opacity = '0';
             await disable_interaction(false);
         }
     }

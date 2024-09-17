@@ -1,104 +1,104 @@
 {
-    "name": "QM30",
-    "desc": "QM30VT2 Vibration Sensor",
-    "unit_id": "1",
+    "name": "QM31",
+    "desc": "QM31VT2 Vibration Sensor",
+    "unit_id": "2",
     "wordorder": "MSW",
     "byteorder": "MSB",
     "bits": 8,
     "parity": "None",
     "stopbits": 1,
     "registers": {
-        "ZRV1": {
+        "ZRV2": {
             "hex": "0x962",
             "function": 3,
             "datatype": "U16"
         },
-        "TPC1": {
+        "TPC2": {
             "hex": "0x2a",
             "function": 3,
             "datatype": "I16"
         },
-        "XRV1": {
+        "XRV2": {
             "hex": "0x994",
             "function": 3,
             "datatype": "U16"
         },
-        "ZPA1": {
+        "ZPA2": {
             "hex": "0x966",
             "function": 3,
             "datatype": "U16"
         },
-        "XPA1": {
+        "XPA2": {
             "hex": "0x998",
             "function": 3,
             "datatype": "U16"
         },
-        "ZPF1": {
+        "ZPF2": {
             "hex": "0x964",
             "function": 3,
             "datatype": "U16"
         },
-        "XPF1": {
+        "XPF2": {
             "hex": "0x996",
             "function": 3,
             "datatype": "U16"
         },
-        "ZRa1": {
+        "ZRa2": {
             "hex": "0x965",
             "function": 3,
             "datatype": "U16"
         },
-        "XRa1": {
+        "XRa2": {
             "hex": "0x997",
             "function": 3,
             "datatype": "U16"
         },
-        "ZKT1": {
+        "ZKT2": {
             "hex": "0x968",
             "function": 3,
             "datatype": "U16"
         },
-        "XKT1": {
+        "XKT2": {
             "hex": "0x99a",
             "function": 3,
             "datatype": "U16"
         },
-        "ZCF1": {
+        "ZCF2": {
             "hex": "0x967",
             "function": 3,
             "datatype": "U16"
         },
-        "XCF1": {
+        "XCF2": {
             "hex": "0x999",
             "function": 3,
             "datatype": "U16"
         },
-        "ZPV1": {
+        "ZPV2": {
             "hex": "0x963",
             "function": 3,
             "datatype": "U16"
         },
-        "XPV1": {
+        "XPV2": {
             "hex": "0x995",
             "function": 3,
             "datatype": "U16"
         },
-        "ZRA1": {
+        "ZRA2": {
             "hex": "0x969",
             "function": 3,
             "datatype": "U16"
         },
-        "XRA1": {
+        "XRA2": {
             "hex": "0x99b",
             "function": 3,
             "datatype": "U16"
         },
-        "RTR1": {
+        "RTR2": {
             "hex": "0xa28",
             "function": 3,
             "datatype": "U16"
         },
-        "RTH1": {
+        "RTH2": {
             "hex": "0xa29",
             "function": 3,
             "datatype": "U16"
