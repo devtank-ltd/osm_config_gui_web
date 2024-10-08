@@ -250,8 +250,9 @@ export class wifi_config_t {
         if (ssid_input.value) {
             ssid = ssid_input.value;
         } else {
-            ssid = this.current_ssid_sel;
+            ssid = this.current_written_ssid;
         }
+
         const wifi_pwd = document.getElementById('wifi-pwd-value').innerText;
         const mqtt_addr = document.getElementById('wifi-mqtt-addr-value').innerText;
         const mqtt_user = document.getElementById('wifi-mqtt-user-value').innerText;
@@ -259,7 +260,6 @@ export class wifi_config_t {
         const mqtt_port = document.getElementById('wifi-mqtt-port-value').innerText;
         const mqtt_sch = document.getElementById('mqtt-scheme-dropdown').selectedIndex + 1;
 
-        this.current_written_ssid = ssid;
         this.comms.wifi_ssid = ssid;
         this.comms.wifi_pwd = wifi_pwd.replace(/([^\\]),/g, '$1\\,'); /* Insert backslash behind comma unless one already exists */
         this.comms.mqtt_addr = mqtt_addr;
