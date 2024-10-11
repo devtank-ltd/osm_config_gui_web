@@ -5,6 +5,8 @@ export class console_t {
         this.dev = dev;
         this.help_btn = this.help_btn.bind(this);
         this.send_cmd = this.send_cmd.bind(this);
+        this.enter_debug_mode = this.enter_debug_mode.bind(this);
+        this.debug_mode = this.debug_mode.bind(this);
     }
 
     async open_console() {
@@ -16,6 +18,8 @@ export class console_t {
         await this.help_btn();
         await this.bind_input_submit();
         await disable_interaction(false);
+        await this.enter_debug_mode(true);
+        this.debug_mode();
     }
 
     async help_btn() {
@@ -42,18 +46,38 @@ export class console_t {
             this.value = this.cmd.value;
             let output;
             if (this.text || this.value) {
-                if (this.value === 'reset') {
-                    output = await this.dev.reset();
-                    output += '\nReset';
-                } else {
-                    output = await this.dev.do_cmd_raw(this.value);
-                }
-                this.terminal = document.getElementById('console-terminal-para');
-                this.terminal.textContent = output;
+                output = this.dev.ll.write(this.value);
                 this.cmd.value = '';
             }
             await disable_interaction(false);
             this.input.focus();
+        }
+    }
+
+    async enter_debug_mode(activate_debug_mode) {
+        if (activate_debug_mode) {
+            this.in_debug_mode = true;
+        } else {
+            await this.dev.do_cmd('debug 0');
+            this.in_debug_mode = false;
+        }
+    }
+
+    async debug_mode() {
+        let msgs;
+        if (this.in_debug_mode) {
+            try {
+                msgs = await this.dev.debug_read();
+                if (msgs) {
+                    this.terminal_para = document.getElementById('console-terminal-para');
+                    this.term = document.getElementById('console-terminal');
+                    this.terminal_para.textContent += msgs;
+                    this.term.scrollTop = this.term.scrollHeight - this.term.clientHeight;
+                }
+            } catch (e) {
+                console.log(`Error in debug mode: ${e}`);
+            }
+            setTimeout(this.debug_mode, 500);
         }
     }
 }

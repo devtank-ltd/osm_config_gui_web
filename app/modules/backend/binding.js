@@ -82,6 +82,25 @@ class low_level_socket_t {
             check_messages();
         });
     }
+
+    async read_raw() {
+        this.wait_for_messages_raw();
+        const msg = this.msgs;
+        this.msgs = '';
+        return msg;
+    }
+
+    async wait_for_messages_raw() {
+        return new Promise((resolve) => {
+            const check_messages = () => {
+                if (this.msgs) {
+                    resolve();
+                } else {
+                    setTimeout(check_messages, 100);
+                }
+            };
+        });
+    }
 }
 
 class low_level_serial_t {
@@ -297,6 +316,11 @@ export class binding_t {
         const output = await this.ll.read();
         const parsed = await this.parse_msg(output);
         return parsed;
+    }
+
+    async debug_read() {
+        const msg = this.ll.read_raw();
+        return msg;
     }
 
     async reset() {

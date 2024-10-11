@@ -23,9 +23,7 @@ class config_gui_t {
                 this.port = port;
                 this.port.getInfo();
 
-                navigator.serial.addEventListener('connect', () => {
-
-                });
+                navigator.serial.addEventListener('connect', () => {});
 
                 this.port.addEventListener('disconnect', () => {
                     this.port.close();

@@ -23,6 +23,8 @@ export class home_tab_t {
         this.save_settings = this.save_settings.bind(this);
         this.change_name = this.change_name.bind(this);
         this.hide_img();
+        this.console = new console_t(this.dev);
+        this.adv_conf = new adv_config_t(this.dev);
     }
 
     async hide_img() {
@@ -31,6 +33,7 @@ export class home_tab_t {
     }
 
     async return_to_home_tab() {
+        await this.console.enter_debug_mode(false);
         await this.insert_homepage(true);
     }
 
@@ -153,7 +156,7 @@ export class home_tab_t {
     }
 
     async change_to_adv_conf_tab() {
-        this.adv_conf = new adv_config_t(this.dev);
+        await this.console.enter_debug_mode(false);
         await this.adv_conf.open_adv_config_tab();
         await this.navbar.change_active_tab('adv-conf-tab');
         document.getElementById('home-tab').addEventListener('click', this.return_to_home_tab);
@@ -161,7 +164,6 @@ export class home_tab_t {
     }
 
     async change_to_console_tab() {
-        this.console = new console_t(this.dev);
         await this.console.open_console();
         await this.navbar.change_active_tab('console-tab');
         document.getElementById('home-tab').addEventListener('click', this.return_to_home_tab);
