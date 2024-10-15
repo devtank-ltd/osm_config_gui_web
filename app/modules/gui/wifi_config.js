@@ -249,6 +249,8 @@ export class wifi_config_t {
         const ssid_input = document.getElementById('wifi-ssid-dropdown-input');
         if (ssid_input.value) {
             ssid = ssid_input.value;
+        } else if (this.current_ssid_sel && this.current_ssid_sel !== 'Other:') {
+            ssid = this.current_ssid_sel;
         } else {
             ssid = this.current_written_ssid;
         }
@@ -259,18 +261,18 @@ export class wifi_config_t {
         const mqtt_pwd = document.getElementById('wifi-mqtt-pwd-value').innerText;
         const mqtt_port = document.getElementById('wifi-mqtt-port-value').innerText;
         const mqtt_sch = document.getElementById('mqtt-scheme-dropdown').selectedIndex + 1;
-
-        this.comms.wifi_ssid = ssid;
-        this.comms.wifi_pwd = wifi_pwd.replace(/([^\\]),/g, '$1\\,'); /* Insert backslash behind comma unless one already exists */
-        this.comms.mqtt_addr = mqtt_addr;
-        this.comms.mqtt_user = mqtt_user;
-        this.comms.mqtt_pwd = mqtt_pwd.replace(/([^\\]),/g, '$1\\,');
-        this.comms.mqtt_port = mqtt_port;
-        this.comms.mqtt_path = 'none'; /* Current firmware doesn't allow CA to be an empty string */
-        this.comms.mqtt_ca = 'none';
-        this.comms.mqtt_sch = mqtt_sch;
-
-        wifimsg.innerText = 'Configuration sent.';
+        if (ssid.replace(/\s/g, '').length) {
+            this.comms.wifi_ssid = ssid;
+            this.comms.wifi_pwd = wifi_pwd.replace(/([^\\]),/g, '$1\\,'); /* Insert backslash behind comma unless one already exists */
+            this.comms.mqtt_addr = mqtt_addr;
+            this.comms.mqtt_user = mqtt_user;
+            this.comms.mqtt_pwd = mqtt_pwd.replace(/([^\\]),/g, '$1\\,');
+            this.comms.mqtt_port = mqtt_port;
+            this.comms.mqtt_path = '';
+            this.comms.mqtt_ca = 'none';
+            this.comms.mqtt_sch = mqtt_sch;
+            wifimsg.innerText = 'Configuration sent.';
+        }
         await disable_interaction(false);
     }
 }
