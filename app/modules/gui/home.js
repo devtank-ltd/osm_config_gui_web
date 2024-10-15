@@ -33,7 +33,6 @@ export class home_tab_t {
     }
 
     async return_to_home_tab() {
-        await this.console.enter_debug_mode(false);
         await this.insert_homepage(true);
     }
 
@@ -156,7 +155,6 @@ export class home_tab_t {
     }
 
     async change_to_adv_conf_tab() {
-        await this.console.enter_debug_mode(false);
         await this.adv_conf.open_adv_config_tab();
         await this.navbar.change_active_tab('adv-conf-tab');
         document.getElementById('home-tab').addEventListener('click', this.return_to_home_tab);

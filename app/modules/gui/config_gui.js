@@ -1,6 +1,6 @@
 import { binding_t } from '../backend/binding.js';
 import { home_tab_t } from './home.js';
-import { disable_interaction } from './disable.js';
+import { disable_fieldset } from './disable.js';
 
 const PIN_HIGH = false;
 const PIN_LOW = true;
@@ -59,6 +59,7 @@ class config_gui_t {
                             await this.home.insert_homepage(false);
                             const disconnect = document.getElementById('global-disconnect');
                             disconnect.addEventListener('click', async () => {
+                                await this.dev.ll.read_raw();
                                 loader.style.opacity = '100';
                                 await this.port.close();
                                 await this.port.forget();
@@ -106,7 +107,7 @@ class config_gui_t {
     }
 
     async spin_fake_osm() {
-        await disable_interaction(true);
+        await disable_fieldset(true);
         const error_div = document.getElementById('error-div');
         const loader = document.getElementById('loader');
         this.url = `${window.document.URL}websocket`;
