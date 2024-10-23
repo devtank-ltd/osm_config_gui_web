@@ -648,14 +648,62 @@ td {
 /* Console Tab */
 
 .console-grid-container {
-  padding: 2em;;
+  padding: 2em;
+  display: grid;
+  grid-template-columns: 100px 100px 1fr 1fr 1fr 1fr;
+  /* e.g.
+      1fr 1fr
+      minmax(10px, 1fr) 3fr
+      repeat(5, 1fr)
+      50px auto 100px 1fr
+  */
+  grid-template-rows: 50px 1fr 1fr 1fr 50px;
+  /* e.g.
+      min-content 1fr min-content
+      100px 1fr max-content
+  */
+}
+}
+
+.debug-stop-btn {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+.debug-play-btn {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+.console-terminal {
+  background-color: var(--black);
+  color: var(--osmlight);
+  width: 100%;
+  height: 500px;
+  grid-column-start: 1;
+  grid-column-end: 7;
+  grid-row-start: 2;
+  grid-row-end: 5;
+  overflow:auto;
+  border-radius:15px;
+  text-align: left;
+}
+
+.console-terminal-para {
+  white-space: pre-wrap;
 }
 
 .console-cmd-field {
-  grid-column-start: 1;
-  grid-column-end: 2;
-  grid-row-start: 2;
-  grid-row-end: 2;
+  grid-column-start: 4;
+  grid-column-end: 6;
+  grid-row-start: 5;
+  grid-row-end: 5;
+  display: flex;
+  align-items: center;
 }
 
 .console-cmd-field input {
@@ -665,29 +713,8 @@ td {
 
 .console-help {
   margin-left: 2em;
-  grid-column-start: 2;
-  grid-column-end: 2;
-  grid-row-start: 1;
-  grid-row-end: 2;
 }
 
-.console-terminal {
-  background-color: var(--black);
-  color: var(--osmlight);
-  width: 100%;
-  height: 500px;
-  grid-column-start: 1;
-  grid-column-end: 2;
-  grid-row-start: 1;
-  grid-row-end: 2;
-  overflow:auto;
-  border-radius:15px;
-  text-align: left;
-}
-
-.console-terminal-para {
-  white-space: pre-wrap;
-}
 
 .help-container {
   white-space: pre-wrap;
