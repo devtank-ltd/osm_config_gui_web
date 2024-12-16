@@ -3,9 +3,11 @@ const START_LINE = '============{';
 const MEAS_FAIL_STR = 'Failed to get measurement reading.';
 const DEBUG_CMD = /DEBUG:([0-9]+):.*/gm;
 
-function on_websocket_disconnect() {
+function on_comms_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
+    const dialog_label = document.getElementById('osm-disconnect-dialog-label');
     const confirm = document.getElementById('osm-disconnect-confirm');
+    dialog_label.textContent = "Unexpected disconnect.";
     dialog.showModal();
     const controller = new AbortController();
 
@@ -37,7 +39,7 @@ class low_level_socket_t {
             console.log(event);
         };
         this.url.onclose = () => {
-            on_websocket_disconnect();
+            on_comms_disconnect();
         };
         this.on_message();
     }
@@ -119,8 +121,17 @@ class low_level_serial_t {
     async read(end_line = END_LINE, timeout = this.timeout_ms) {
         const decoder = new TextDecoder();
         let msgs = '';
+        let reader = null;
         const start_time = Date.now();
-        const reader = await this.port.readable.getReader();
+        try {
+            reader = await this.port.readable.getReader();
+        } catch (e) {
+            console.log(e);
+            on_comms_disconnect();
+        }
+        if (!reader) {
+            return msgs;
+        }
         try {
             while (Date.now() > start_time - timeout) {
                 const { value, done } = await reader.read();
