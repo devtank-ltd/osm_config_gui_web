@@ -8,6 +8,9 @@
     "bits": 8,
     "parity": "None",
     "stopbits": 2,
+    "version": 1,
+    "baudrate": 9600,
+    "mode": "RTU",
     "registers": {
         "dPa": {
             "desc": "Pressure in tenths of Pa (only HD404ST2...)",

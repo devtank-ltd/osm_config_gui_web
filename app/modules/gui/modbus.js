@@ -1,6 +1,9 @@
 import { disable_interaction, limit_characters } from './disable.js';
 
 export class modbus_t {
+    DEFAULT_BAUD = 9600;
+    DEFAULT_MODE = 'RTU';
+
     constructor(dev) {
         this.dev = dev;
         this.load_modbus_config = this.load_modbus_config.bind(this);
@@ -268,9 +271,27 @@ export class modbus_t {
 
     async apply_template(e) {
         if (this.template) {
+            console.log(this.template);
             const loader = document.getElementById('loader');
             loader.style.opacity = '100';
             await disable_interaction(true);
+
+            if (this.template.version) {
+                this.baud = this.template.baudrate;
+                this.mode = this.template.mode;
+            } else {
+                this.baud = this.DEFAULT_BAUD;
+                this.mode = this.DEFAULT_MODE;
+            }
+
+            this.mb_setup_conf = this.template.bits +
+                                 this.template.parity[0] +
+                                 this.template.stopbits;
+            await this.dev.modbus_setup(
+                this.mode,
+                this.baud,
+                this.mb_setup_conf
+            );
             await this.dev.mb_dev_add(
                 this.template.unit_id,
                 this.template.byteorder,
