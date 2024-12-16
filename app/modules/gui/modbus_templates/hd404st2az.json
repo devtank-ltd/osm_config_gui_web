@@ -1,6 +1,7 @@
 {
     "name": "HD40",
-    "desc": "Senseca HD404ST2AZ Pressure Sensor -250->+250Pa Nominal full scale, with auto-zero circuit, no LCD, pressure output.",
+    "$comment": "Senseca HD404ST2AZ Pressure Sensor -250->+250Pa Nominal full scale, with auto-zero circuit, no LCD, pressure output.",
+    "desc": "Senseca HD404ST2AZ",
     "unit_id": "1",
     "wordorder": "MSW",
     "byteorder": "MSB",
