@@ -1,0 +1,49 @@
+{
+    "name": "ET30",
+    "$comment": "ET-303 Tribo-Electric Dust Monitor",
+    "desc": "ET-303 Dust Monitor",
+    "unit_id": "1",
+    "wordorder": "MSW",
+    "byteorder": "MSB",
+    "bits": 8,
+    "parity": "None",
+    "stopbits": 1,
+    "registers": {
+        "PRES": {
+            "desc": "Pressure",
+            "hex": "0xc1",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "ATMP": {
+            "desc": "Ambient Temperature",
+            "hex": "0xc2",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "FTMP": {
+            "desc": "Flue Gas Temperature",
+            "hex": "0xc4",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "MPCT": {
+            "desc": "Meas Percent (x100)",
+            "hex": "0xfb",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "MM3": {
+            "desc": "Meas Milligram Metre Cubed (x10)",
+            "hex": "0xfc",
+            "function": 3,
+            "datatype": "U16"
+        },
+        "MNM3": {
+            "desc": "Meas Milligram Normalised Metre Cubed (x10)",
+            "hex": "0xfd",
+            "function": 3,
+            "datatype": "U16"
+        }
+    }
+}
