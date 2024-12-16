@@ -7,7 +7,7 @@ function on_comms_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
     const dialog_label = document.getElementById('osm-disconnect-dialog-label');
     const confirm = document.getElementById('osm-disconnect-confirm');
-    dialog_label.textContent = "Unexpected disconnect.";
+    dialog_label.textContent = 'Unexpected disconnect.';
     dialog.showModal();
     const controller = new AbortController();
 

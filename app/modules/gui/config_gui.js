@@ -74,10 +74,10 @@ class config_gui_t {
                         }
                     })
                     .catch((e) => {
-                    this.disconnect_modal('Could not connect to OSM');
-                    console.log(e);
-                });
-            })
+                        this.disconnect_modal('Could not connect to OSM');
+                        console.log(e);
+                    });
+            });
     }
 
     async disconnect_modal(text = 'Disconnected') {

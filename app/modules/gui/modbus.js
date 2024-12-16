@@ -2,6 +2,7 @@ import { disable_interaction, limit_characters } from './disable.js';
 
 export class modbus_t {
     DEFAULT_BAUD = 9600;
+
     DEFAULT_MODE = 'RTU';
 
     constructor(dev) {
@@ -284,13 +285,13 @@ export class modbus_t {
                 this.mode = this.DEFAULT_MODE;
             }
 
-            this.mb_setup_conf = this.template.bits +
-                                 this.template.parity[0] +
-                                 this.template.stopbits;
+            this.mb_setup_conf = this.template.bits
+                                 + this.template.parity[0]
+                                 + this.template.stopbits;
             await this.dev.modbus_setup(
                 this.mode,
                 this.baud,
-                this.mb_setup_conf
+                this.mb_setup_conf,
             );
             await this.dev.mb_dev_add(
                 this.template.unit_id,
