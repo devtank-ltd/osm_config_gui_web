@@ -79,6 +79,7 @@ input[type=number] {
   width: 80%;
   height: 20px;
   padding: 0px;
+  text-align: left;
 }
 
 .wifi-ssid-dropbtn:hover, .wifi-ssid-dropbtn:focus {
@@ -142,11 +143,11 @@ select {
 
 .mqtt-scheme-dropdown {
   width: 100%;
-  text-align: center;
+  text-align: left;
 }
 .wifi-ssid-dropdown {
   width: 80%;
-  text-align: center;
+  text-align: left;
 }
 
 
@@ -471,6 +472,10 @@ td {
   justify-content: center;
 }
 
+.lora-config-table td {
+  text-align: left;
+}
+
 
 /* WiFi Configuration Table */
 
@@ -481,25 +486,27 @@ td {
   grid-row-end: 2;
   height:150px;
   width: 90%;
-  border-style:solid;
+  border-style: solid;
   border-radius:15px;
   border-color: var(--osmdark);
   margin-top: 2em;
   margin-left: 2em;
 }
 
-
 .wifi-config-div .buttons {
   margin-left: 1em;
-  display:flex;
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
 }
 
+.wifi-config-table td {
+  text-align: left;
+}
+
 
 /* Firmware Tool */
-
 
 .home-firmware-div {
   grid-column-start: 3;
