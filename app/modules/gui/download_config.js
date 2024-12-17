@@ -52,6 +52,7 @@ export class save_configuration_t {
             measurements: {},
         };
 
+        await this.dev.save();
         this.sensor_id = await this.dev.name;
         this.ios = await this.dev.ios();
         this.measurements = await this.dev.get_measurements();
