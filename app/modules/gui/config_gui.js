@@ -72,11 +72,11 @@ class config_gui_t {
                             const error_div = document.getElementById('error-div');
                             error_div.textContent = 'Failed to connect, refresh page and try again.';
                         }
+                    })
+                    .catch((e) => {
+                        this.disconnect_modal('Could not connect to OSM');
+                        console.log(e);
                     });
-            })
-            .catch((e) => {
-                this.disconnect_modal('Could not connect to OSM');
-                console.log(e);
             });
     }
 

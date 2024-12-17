@@ -147,7 +147,7 @@ export class wifi_config_t {
 
     async populate_wifi_fields() {
         const title = 'WiFi Configuration';
-        const wifi_headers = ['SSID', 'WiFi Password', 'MQTT Address', 'MQTT User', 'MQTT Password', 'MQTT Port', 'MQTT Scheme', 'Status'];
+        const wifi_headers = ['SSID', 'WiFi Password', 'MQTT Address', 'MQTT User', 'MQTT Pwd', 'MQTT Port', 'MQTT Scheme', 'Status'];
 
         this.current_written_ssid = await this.comms.wifi_ssid;
         const wifi_pwd = await this.comms.wifi_pwd;
@@ -173,6 +173,7 @@ export class wifi_config_t {
         const cell = wifi_row.insertCell();
         cell.colSpan = 2;
         cell.innerText = title;
+        cell.style.textAlign = 'center';
 
         wifi_headers.forEach((i) => {
             const r = wifi_tBody.insertRow();
@@ -211,7 +212,7 @@ export class wifi_config_t {
                 mu.id = 'wifi-mqtt-user-value';
                 mu.contentEditable = true;
                 break;
-            case 'MQTT Password':
+            case 'MQTT Pwd':
                 const mp = r.insertCell();
                 mp.innerHTML = mqtt_pwd;
                 mp.id = 'wifi-mqtt-pwd-value';

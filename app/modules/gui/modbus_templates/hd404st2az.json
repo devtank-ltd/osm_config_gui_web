@@ -1,0 +1,52 @@
+{
+    "name": "HD40",
+    "$comment": "Senseca HD404ST2AZ Pressure Sensor -250->+250Pa Nominal full scale, with auto-zero circuit, no LCD, pressure output.",
+    "desc": "Senseca HD404ST2AZ",
+    "unit_id": "1",
+    "wordorder": "MSW",
+    "byteorder": "MSB",
+    "bits": 8,
+    "parity": "None",
+    "stopbits": 2,
+    "version": "1",
+    "baudrate": 9600,
+    "mode": "RTU",
+    "registers": {
+        "dPa": {
+            "desc": "Pressure in tenths of Pa (only HD404ST2...)",
+            "hex": "0x03",
+            "function": 4,
+            "datatype": "I16"
+        },
+        "Pa": {
+            "desc": "Pressure in Pa (only HD404ST2... and HD404ST4...)",
+            "hex": "0x04",
+            "function": 4,
+            "datatype": "I16"
+        },
+        "cmmH": {
+            "desc": "Pressure in hundredths of mmH2O (only HD404ST2... and HD404ST4AZ...)",
+            "hex": "0x08",
+            "function": 4,
+            "datatype": "I16"
+        },
+        "dmmH": {
+            "desc": "Pressure in tenths of mmH2O (only HD404ST2... and HD404ST4...)",
+            "hex": "0x09",
+            "function": 4,
+            "datatype": "I16"
+        },
+        "mmmH": {
+            "desc": "Pressure in thousandths of inchH2O (only HD404ST2... and HD404ST4AZ...)",
+            "hex": "0x0b",
+            "function": 4,
+            "datatype": "I16"
+        },
+        "ERR1": {
+            "desc": "Error register",
+            "hex": "0x1a",
+            "function": 4,
+            "datatype": "I16"
+        }
+    }
+}

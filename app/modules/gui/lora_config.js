@@ -47,6 +47,7 @@ export class lora_config_t {
         const cell = lora_row.insertCell();
         cell.colSpan = 2;
         cell.textContent = title;
+        cell.style.textAlign = 'center';
 
         lora_headers.forEach((i) => {
             const r = lora_tBody.insertRow();
