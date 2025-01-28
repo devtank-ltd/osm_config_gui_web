@@ -175,7 +175,15 @@ export class modbus_t {
         for (let i = 0; i < this.template_json.templates.length; i += 1) {
             const tmp = this.template_json.templates[i];
             const obj = await fetch(`modules/gui/modbus_templates/${tmp}`);
-            this.objs.push(await obj.json());
+            let template = null;
+            try {
+                template = await obj.json();
+            } catch(e) {
+                console.log(e);
+            }
+            if (template) {
+                this.objs.push(template);
+            }
         }
         await disable_interaction(false);
         return this.objs;
