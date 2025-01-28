@@ -1,0 +1,66 @@
+{
+    "name": "AUMR",
+    "desc": "Autometer",
+    "unit_id": "1",
+    "wordorder": "MSW",
+    "byteorder": "LSB",
+    "bits": 8,
+    "parity": "None",
+    "stopbits": 1,
+    "registers": {
+        "VP1": {
+            "hex": "0x10",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Voltage Phase 1"
+        },
+        "VP2": {
+            "hex": "0x12",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Voltage Phase 2"
+        },
+        "VP3": {
+            "hex": "0x14",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Voltage Phase 3"
+        },
+        "AP1": {
+            "hex": "0x50",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Current Phase 1"
+        },
+        "AP2": {
+            "hex": "0x52",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Current Phase 2"
+        },
+        "AP3": {
+            "hex": "0x54",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Current Phase 3"
+        },
+        "Pwr": {
+            "hex": "0x96",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Total Power"
+        },
+        "PF": {
+            "hex": "0x156",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Power Factor"
+        },
+        "Imp": {
+            "hex": "0x160",
+            "function": 4,
+            "datatype": "F",
+            "desc": "Import Energy"
+        }
+    }
+}

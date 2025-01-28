@@ -1,0 +1,48 @@
+{
+    "name": "ABB",
+    "desc": "ABB ACS550",
+    "unit_id": "1",
+    "wordorder": "MSW",
+    "byteorder": "LSB",
+    "bits": 8,
+    "parity": "None",
+    "stopbits": 1,
+    "registers": {
+        "CT": {
+            "hex": "0x68",
+            "function": 3,
+            "datatype": "F",
+            "desc": "Current"
+        },
+        "TRQ": {
+            "hex": "0x69",
+            "function": 3,
+            "datatype": "F",
+            "desc": "Torque"
+        },
+        "PWR": {
+            "hex": "0x6A",
+            "function": 3,
+            "datatype": "F",
+            "desc": "Power"
+        },
+        "DCV": {
+            "hex": "0x6B",
+            "function": 3,
+            "datatype": "F",
+            "desc": "DC Bus Voltage"
+        },
+        "VOUT": {
+            "hex": "0x6D",
+            "function": 3,
+            "datatype": "F",
+            "desc": "Output Voltage"
+        },
+        "SPD": {
+            "hex": "0x66",
+            "function": 3,
+            "datatype": "F",
+            "desc": "Speed"
+        }
+    }
+}
