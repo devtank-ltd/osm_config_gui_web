@@ -133,8 +133,10 @@ class low_level_serial_t {
             return msgs;
         }
         try {
-            while (Date.now() > start_time - timeout) {
-                const { value, done } = await reader.read();
+            while (Date.now() < start_time + timeout) {
+                const read_ = reader.read();
+                const timeout_promise = new Promise((_, reject) => setTimeout(() => reject(new Error('Read operation timed out')), timeout));
+                const { value, done } = await Promise.race([read_, timeout_promise]);
                 if (done) {
                     break;
                 }
