@@ -3,7 +3,7 @@
     "desc": "Autometer",
     "unit_id": "1",
     "wordorder": "MSW",
-    "byteorder": "LSB",
+    "byteorder": "MSB",
     "bits": 8,
     "parity": "None",
     "stopbits": 1,
