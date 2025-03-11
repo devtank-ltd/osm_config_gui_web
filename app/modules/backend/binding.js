@@ -528,23 +528,23 @@ export class binding_t {
     }
 
     async validate_cc_mp(phase) {
-        if (typeof(phase) != 'number') {
+        if (typeof (phase) !== 'number') {
             console.log(`Invalid phase: ${phase}`);
-            return;
+            return false;
         }
         let diff = await this.get_cc_mp(phase);
         diff -= DEFAULT_CC_MIDPOINT;
         diff = Math.abs(diff);
         if (diff > CC_MIDPOINT_THRESHOLD) {
             console.log(`Invalid midpoint set for CC${phase}`);
-            return false
+            return false;
         }
         return true;
     }
 
     async validate_all_cc_mps() {
         for (let i = 1; i < 4; i += 1) {
-            let mp = await this.validate_cc_mp(i);
+            const mp = await this.validate_cc_mp(i);
             if (!mp) {
                 console.log(`Adding default midpoint for cc phase ${i}`);
                 await this.update_midpoint(DEFAULT_CC_MIDPOINT, `CC${i}`);

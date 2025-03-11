@@ -178,7 +178,7 @@ export class modbus_t {
             let template = null;
             try {
                 template = await obj.json();
-            } catch(e) {
+            } catch (e) {
                 console.log(e);
             }
             if (template) {
