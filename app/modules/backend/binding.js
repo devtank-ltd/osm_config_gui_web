@@ -2,6 +2,8 @@ const END_LINE = '}============';
 const START_LINE = '============{';
 const MEAS_FAIL_STR = 'Failed to get measurement reading.';
 const DEBUG_CMD = /DEBUG:([0-9]+):.*/gm;
+const DEFAULT_CC_MIDPOINT = 2048;
+const CC_MIDPOINT_THRESHOLD = 500;
 
 function on_comms_disconnect() {
     const dialog = document.getElementById('osm-disconnect-dialog');
@@ -525,8 +527,34 @@ export class binding_t {
         return mp_extracted;
     }
 
+    async validate_cc_mp(phase) {
+        if (typeof(phase) != 'number') {
+            console.log(`Invalid phase: ${phase}`);
+            return;
+        }
+        let diff = await this.get_cc_mp(phase);
+        diff -= DEFAULT_CC_MIDPOINT;
+        diff = Math.abs(diff);
+        if (diff > CC_MIDPOINT_THRESHOLD) {
+            console.log(`Invalid midpoint set for CC${phase}`);
+            return false
+        }
+        return true;
+    }
+
+    async validate_all_cc_mps() {
+        for (let i = 1; i < 4; i += 1) {
+            let mp = await this.validate_cc_mp(i);
+            if (!mp) {
+                console.log(`Adding default midpoint for cc phase ${i}`);
+                await this.update_midpoint(DEFAULT_CC_MIDPOINT, `CC${i}`);
+            }
+        }
+    }
+
     async cc_cal() {
         this.calibrate = await this.do_cmd('cc_cal');
+        const mps = await this.validate_all_cc_mps();
     }
 
     async extract_interval_mins() {
