@@ -366,6 +366,9 @@ export class binding_t {
     async help() {
         this.raw = await this.do_cmd_raw('?');
         [, this.text] = this.raw.split('=============');
+        if (!this.text) {
+            return "Could not get help.";
+        }
         [this.s] = this.text.split(END_LINE);
         return this.s;
     }
@@ -700,9 +703,11 @@ export class binding_t {
 
     async network_list() {
         let output = null;
+        this.ll.timeout_ms = 5000;
         try {
             output = await this.do_cmd('comms_list');
         } catch (e) {
+            this.ll.timeout_ms = 1000;
             console.log(e);
             return output;
         }
@@ -710,9 +715,11 @@ export class binding_t {
         try {
             comms_j = JSON.parse(output);
         } catch (e) {
+            this.ll.timeout_ms = 1000;
             console.log(e);
             return null;
         }
+        this.ll.timeout_ms = 1000;
         return comms_j;
     }
 
@@ -753,6 +760,29 @@ export class binding_t {
             }
         }
         return io_list;
+    }
+
+    async get_debounce(index) {
+        if (index !== 0 && index !== 1) {
+            console.log(`Invalid index: ${index}`);
+            return;
+        }
+        const dbounce = await this.do_cmd(`pulse_dbnc ${index}`);
+        console.log(dbounce);
+        const pattern = /([0-1]{2}: )([0-9]+)ms/
+        const match = dbounce.match(pattern);
+        if (!match) {
+            return;
+        }
+        return match[2];
+    }
+
+    async set_debounce(ms, index) {
+        if (index !== 0 && index !== 1) {
+            console.log(`Invalid index: ${index}`);
+            return;
+        }
+        const new_debounce = await this.do_cmd(`pulse_dbnc ${index} ${ms}`);
     }
 
     async get_ftma_types() {
