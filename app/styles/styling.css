@@ -669,6 +669,7 @@ td {
       min-content 1fr min-content
       100px 1fr max-content
   */
+  gap: 10px;
 }
 }
 
@@ -737,6 +738,7 @@ td {
   display: grid;
   grid-template-columns: repeat(3, fr);
   grid-template-rows: repeat(3, 100px);
+  gap: 10px;
   width: 100%;
   text-align: center;
 }
