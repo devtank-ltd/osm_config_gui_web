@@ -367,7 +367,7 @@ export class binding_t {
         this.raw = await this.do_cmd_raw('?');
         [, this.text] = this.raw.split('=============');
         if (!this.text) {
-            return "Could not get help.";
+            return 'Could not get help.';
         }
         [this.s] = this.text.split(END_LINE);
         return this.s;
@@ -765,14 +765,14 @@ export class binding_t {
     async get_debounce(index) {
         if (index !== 0 && index !== 1) {
             console.log(`Invalid index: ${index}`);
-            return;
+            return '';
         }
         const dbounce = await this.do_cmd(`pulse_dbnc ${index}`);
         console.log(dbounce);
-        const pattern = /([0-1]{2}: )([0-9]+)ms/
+        const pattern = /([0-1]{2}: )([0-9]+)ms/;
         const match = dbounce.match(pattern);
         if (!match) {
-            return;
+            return '';
         }
         return match[2];
     }

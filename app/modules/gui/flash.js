@@ -74,29 +74,29 @@ class flash_controller_base_t {
         errlabel.style.display = 'none';
         const msg = 'Writing OSM firmware...';
         const disabled = disable_interaction(true);
-        if (!disabled) return false
+        if (!disabled) return false;
         try {
-            let stm_api;
-            let serial;
             await this.port.close();
-            serial = new WebSerial(this.port);
+            const serial = new WebSerial(this.port);
             serial.onConnect = () => {};
             serial.onDisconnect = () => {};
-            stm_api = new this.api_type(serial, this.api_ext_params);
+            const stm_api = new this.api_type(serial, this.api_ext_params);
             await this.flash_start(stm_api);
             await stm_api.eraseAll();
             const records = this.get_records(fw_bin);
             await flash_controller_base_t.write_data(stm_api, records, msg);
             await stm_api.disconnect();
             await this.port.open({
-                    baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
-                });
+                baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
+            });
             disable_interaction(false);
+            return true;
         } catch (error) {
             console.log(error);
             errlabel.style.display = 'block';
             errlabel.textContent = 'Failed to write firmware.';
             disable_interaction(false);
+            return false;
         }
     }
 }
@@ -302,18 +302,18 @@ export class firmware_t {
                         const content = JSON.stringify(config);
                         this.write_config_obj.load_gui_with_config(content);
                     } catch (error) {
-                        console.error("Firmware flashing failed:", error);
+                        console.error('Firmware flashing failed:', error);
                     }
                 };
                 reader.onerror = (e) => {
-                    console.error("File reading error:", e);
+                    console.error('File reading error:', e);
                 };
                 reader.readAsArrayBuffer(resp);
             })
             .catch((error) => {
-                console.error("Failed to fetch firmware:", error);
-            })
-        }
+                console.error('Failed to fetch firmware:', error);
+            });
+    }
 }
 
 export class rak3172_firmware_t {

@@ -20,7 +20,7 @@ export class io_t {
     async get_debounce_ms(index) {
         const dbounce = await this.dev.get_debounce(index);
         if (!dbounce) {
-            return;
+            return null;
         }
         return dbounce;
     }
@@ -140,7 +140,7 @@ export class io_t {
             this.checkboxes[meas] = chk;
 
             const debouncecell = io_row.insertCell();
-            if (meas == 'CNT1') {
+            if (meas === 'CNT1') {
                 debouncecell.textContent = debounce_ms_0;
                 debouncecell.contentEditable = true;
                 debouncecell.addEventListener('focusout', this.set_pcnt_debounce);
