@@ -6,10 +6,11 @@ export class save_configuration_t {
         this.comms = comms;
         this.btn = document.getElementById('global-save-osm-config');
         this.save_config = this.save_config.bind(this);
+        this.create_download = this.create_download.bind(this);
     }
 
     async add_event_listeners() {
-        this.btn.addEventListener('click', this.save_config);
+        this.btn.addEventListener('click', this.create_download);
     }
 
     async save_config() {
@@ -202,13 +203,13 @@ export class save_configuration_t {
 
         const json_str = JSON.stringify(json_pop).replace(/\\n/g, '');
         const json_final = JSON.parse(json_str);
-
-        this.create_download(json_final);
         loader.style.opacity = '0';
         await disable_interaction(false);
+        return json_final;
     }
 
-    async create_download(contents) {
+    async create_download() {
+        const contents = await this.save_config();
         const dlAnchorElem = window.document.createElement('a');
         window.document.body.appendChild(dlAnchorElem);
         this.dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(contents, null, 2))}`;
