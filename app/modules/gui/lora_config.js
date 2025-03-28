@@ -5,6 +5,9 @@ export class lora_config_t {
     constructor(comms) {
         this.comms = comms;
         this.write_config = this.write_config.bind(this);
+        this.update_comms_status = this.update_comms_status.bind(this);
+        this.add_refresh_listener = this.add_refresh_listener.bind(this);
+        this.populate_lora_fields = this.populate_lora_fields.bind(this);
     }
 
     async get_region_html() {
@@ -24,6 +27,35 @@ export class lora_config_t {
         sendbtn.onclick = this.write_config;
     }
 
+    async get_status_html() {
+        this.resp = await fetch('modules/gui/html/status_refresh.html');
+        this.text = await this.resp.text();
+        return this.text;
+    }
+
+    async get_comms_status() {
+        const comms_conn = await this.comms.comms_conn;
+        const status = comms_conn.includes('1 | Connected') ? 'Connected' : 'Disconnected';
+        return status;
+    }
+
+    async add_refresh_listener() {
+        this.comms_refresh_btn = document.getElementById('comms-status-refresh');
+        this.comms_refresh_btn.onclick = this.update_comms_status;
+    }
+
+    async update_comms_status() {
+        disable_interaction(true);
+        const comms_status = await this.get_comms_status();
+        const status_input = document.getElementById('lora-status-value');
+        if (status_input) {
+            status_input.innerHTML = comms_status;
+            status_input.innerHTML += this.status_refresh;
+            await this.add_refresh_listener();
+        }
+        disable_interaction(false);
+    }
+
     async populate_lora_fields() {
         const title = 'LoRaWAN Configuration';
         const lora_headers = ['Device EUI', 'Application Key', 'Region', 'Status'];
@@ -31,9 +63,11 @@ export class lora_config_t {
         const dev_eui = await this.comms.lora_deveui;
         const app_key = await this.comms.lora_appkey;
         const region = await this.comms.lora_region;
-        let conn = await this.comms.comms_conn;
         const region_dropdwn = await this.get_region_html();
+        this.status_refresh = await this.get_status_html();
 
+        const wifi_div = document.getElementById('wifi-config-div');
+        wifi_div.style.display = 'none';
         const lora_res = document.querySelector('div.lora-config-table');
         lora_res.style.display = 'block';
 
@@ -49,7 +83,9 @@ export class lora_config_t {
         cell.textContent = title;
         cell.style.textAlign = 'center';
 
-        lora_headers.forEach((i) => {
+        const comms_status = await this.get_comms_status();
+
+        lora_headers.forEach(async (i) => {
             const r = lora_tBody.insertRow();
             r.insertCell().textContent = i;
             if (i === 'Device EUI') {
@@ -77,8 +113,12 @@ export class lora_config_t {
                 }
             } else if (i === 'Status') {
                 const td = r.insertCell();
-                conn = (conn.includes('1 | Connected')) ? 'Connected' : 'Disconnected';
-                td.textContent = conn;
+                td.style.display = 'flex';
+                td.style.alignItems = 'center';
+                td.style.justifyContent = 'space-between';
+                td.innerText = comms_status;
+                td.innerHTML += this.status_refresh;
+                await this.add_refresh_listener();
                 td.id = 'lora-status-value';
             }
         });
