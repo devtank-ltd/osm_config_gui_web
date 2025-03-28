@@ -215,6 +215,14 @@ button {
   height: 10px;
 }
 
+.comms-status-refresh {
+  width: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10px;
+}
+
 button:hover {
   background-color: var(--osmlight);
   cursor: pointer;
@@ -405,11 +413,14 @@ td {
 
 /* LoRaWAN Configuration Table */
 
-.lora-config-table table {
+.lora-config-div {
   grid-column-start: 2;
   grid-column-end: 2;
   grid-row-start: 1;
   grid-row-end: 1;
+}
+
+.lora-config-table table {
   width: 90%;
   overflow: auto;
   height:150px;

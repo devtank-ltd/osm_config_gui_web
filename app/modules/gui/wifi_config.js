@@ -9,6 +9,8 @@ export class wifi_config_t {
         this.populate_wifi_ssid_dropdown = this.populate_wifi_ssid_dropdown.bind(this);
         this.close_dropdown_menu();
         this.update_wifi_ssid_selection = this.update_wifi_ssid_selection.bind(this);
+        this.update_comms_status = this.update_comms_status.bind(this);
+        this.add_refresh_listener = this.add_refresh_listener.bind(this);
     }
 
     async add_listeners() {
@@ -18,6 +20,12 @@ export class wifi_config_t {
 
     async get_ssid_html() {
         this.resp = await fetch('modules/gui/html/wifi_ssid_dropdown.html');
+        this.text = await this.resp.text();
+        return this.text;
+    }
+
+    async get_status_html() {
+        this.resp = await fetch('modules/gui/html/status_refresh.html');
         this.text = await this.resp.text();
         return this.text;
     }
@@ -135,6 +143,29 @@ export class wifi_config_t {
         await this.add_other_ssid_opt();
     }
 
+    async get_comms_status() {
+        const comms_conn = await this.comms.comms_conn;
+        const status = comms_conn.includes('1 | Connected') ? 'Connected' : 'Disconnected';
+        return status
+    }
+
+    async add_refresh_listener() {
+        this.comms_refresh_btn = document.getElementById('comms-status-refresh');
+        this.comms_refresh_btn.onclick = this.update_comms_status;
+    }
+
+    async update_comms_status() {
+        disable_interaction(true);
+        const comms_status = await this.get_comms_status();
+        const status_input = document.getElementById('wifi-status-value');
+        if (status_input) {
+            status_input.innerHTML = comms_status;
+            status_input.innerHTML += this.status_refresh;
+            await this.add_refresh_listener();
+        }
+        disable_interaction(false);
+    }
+
     async add_other_ssid_opt() {
         const otheropt = document.createElement('a');
         otheropt.text = 'Other:';
@@ -158,9 +189,10 @@ export class wifi_config_t {
         const mqtt_scheme = await this.comms.mqtt_sch;
         const scheme_dropdwn = await this.get_scheme_html();
         const ssid_dropdwn = await this.get_ssid_html();
+        this.status_refresh = await this.get_status_html();
 
-        let conn = await this.comms.comms_conn;
-
+        const lora_div = document.getElementById('lora-config-div');
+        lora_div.style.display = 'none';
         const wifi_res = document.querySelector('div.wifi-config-table');
         wifi_res.style.display = 'block';
         const wifi_btns = document.getElementById('wifi-btns');
@@ -174,8 +206,9 @@ export class wifi_config_t {
         cell.colSpan = 2;
         cell.innerText = title;
         cell.style.textAlign = 'center';
+        const comms_status = await this.get_comms_status();
 
-        wifi_headers.forEach((i) => {
+        wifi_headers.forEach(async (i) => {
             const r = wifi_tBody.insertRow();
             r.insertCell().innerText = i;
             switch (i) {
@@ -232,8 +265,12 @@ export class wifi_config_t {
                 break;
             case 'Status':
                 const st = r.insertCell();
-                conn = (conn.includes('1 | Connected')) ? 'Connected' : 'Disconnected';
-                st.innerText = conn;
+                st.style.display = 'flex';
+                st.style.alignItems = 'center';
+                st.style.justifyContent = 'space-between';
+                st.innerText = comms_status;
+                st.innerHTML += this.status_refresh;
+                await this.add_refresh_listener();
                 st.id = 'wifi-status-value';
                 break;
             default:
