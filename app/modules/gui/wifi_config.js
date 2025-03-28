@@ -146,7 +146,7 @@ export class wifi_config_t {
     async get_comms_status() {
         const comms_conn = await this.comms.comms_conn;
         const status = comms_conn.includes('1 | Connected') ? 'Connected' : 'Disconnected';
-        return status
+        return status;
     }
 
     async add_refresh_listener() {

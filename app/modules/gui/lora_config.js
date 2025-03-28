@@ -63,7 +63,6 @@ export class lora_config_t {
         const dev_eui = await this.comms.lora_deveui;
         const app_key = await this.comms.lora_appkey;
         const region = await this.comms.lora_region;
-        let conn = await this.comms.comms_conn;
         const region_dropdwn = await this.get_region_html();
         this.status_refresh = await this.get_status_html();
 
