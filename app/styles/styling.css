@@ -333,97 +333,30 @@ td {
   color: var(--white);
 }
 
-/* Home Page */
-
-.home-page-div {
-  display: grid;
-}
-
-.home-edit-uplink-field {
-  grid-column-start: 0;
-  grid-column-end: 2;
-  grid-row-start: 2;
-  grid-row-end: 2;
-  border-radius: 10%;
-  margin: auto;
-}
-
-.home-edit-uplink-field input {
-  border-style: solid;
-  color: var(--black);
-  border-color: var(--osmdark);
-  background-color: var(--white);
-  border-radius: 15px;
-  margin-bottom: 20px;
-}
-
-.home-uplink-submit {
-  cursor: pointer;
-}
-
-.home-serial-firmware-config-div {
-  margin          : 2em 0.5em;
-  grid-column-start: 0;
-  grid-column-end: 2;
-  grid-row-start: 4;
-  grid-row-end: 4;
-}
-
-.home-uplink-error-div {
-  color: red;
-}
-
-
-.name-input {
-  border-style: solid;
-  border-radius: 15px;
-  width: 40%;
-  border-color: var(--osmdark);
-}
-
-.serial-num-input {
-  border-style: solid;
-  border-radius: 15px;
-  width: 40%;
-  border-color: var(--osmdark);
-  grid-column-start: 0;
-  grid-column-end: 0;
-  grid-row-start: 0;
-  grid-row-end: 0;
-}
-
-.icon-row {
-  margin-top: 2em;
-  grid-column-start: 4;
-  grid-column-end: 4;
-  grid-row-start: 1;
-  grid-row-end: 2;
-}
-
 .global-fieldset {
   border: none;
 }
 
-.osm-sensor {
-  grid-column-start: 4;
-  grid-column-end: 4;
-  grid-row-start: 2;
-  grid-row-end: 4;
-  margin: auto;
+/* Home Page */
+
+.home-page-div {
+  display: grid;
+  margin-top: 10px;
+  grid-template-columns: repeat(3, fr);
+  grid-template-rows: repeat(4, fr);
+  gap: 10px;
 }
 
 /* Measurements Table */
 
 .measurements-table {
   grid-column-start: 0;
-  grid-column-end: 2;
-  grid-row-start: 0;
-  grid-row-end: 0;
+  grid-column-end: 0;
+  grid-row-start: 1;
+  grid-row-end: 1;
   overflow:auto;
-  margin: auto;
-  max-width: 450px;
   height: 400px;
-  margin-top: 2em;
+  max-width: 450px;
   border-style: solid;
   border-radius: 15px;
   border-color: var(--osmdark);
@@ -442,16 +375,42 @@ td {
   width: 100%;
 }
 
+/* Uplink Configuration */
+
+.home-edit-uplink-field {
+  margin: auto;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  border-radius: 10%;
+}
+
+.home-edit-uplink-field input {
+  border-style: solid;
+  color: var(--black);
+  border-color: var(--osmdark);
+  background-color: var(--white);
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.home-uplink-submit {
+  cursor: pointer;
+}
+
+.home-uplink-error-div {
+  color: red;
+}
 
 /* LoRaWAN Configuration Table */
 
 .lora-config-table table {
   grid-column-start: 2;
-  grid-column-end: 3;
+  grid-column-end: 2;
   grid-row-start: 1;
-  grid-row-end: 2;
+  grid-row-end: 1;
   width: 90%;
-  margin: auto;
   overflow: auto;
   height:150px;
   border-style:solid;
@@ -460,7 +419,6 @@ td {
   margin-top: 2em;
   margin-left: 2em;
 }
-
 
 .lora-config-div .buttons {
   margin: auto;
@@ -476,25 +434,23 @@ td {
   text-align: left;
 }
 
-
 /* WiFi Configuration Table */
 
-.wifi-config-table table {
+.wifi-config-div {
   grid-column-start: 2;
-  grid-column-end: 3;
+  grid-column-end: 2;
   grid-row-start: 1;
-  grid-row-end: 2;
-  height:150px;
-  width: 90%;
+  grid-row-end: 1;
+}
+
+.wifi-config-table table {
+
   border-style: solid;
   border-radius:15px;
   border-color: var(--osmdark);
-  margin-top: 2em;
-  margin-left: 2em;
 }
 
 .wifi-config-div .buttons {
-  margin-left: 1em;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -505,14 +461,13 @@ td {
   text-align: left;
 }
 
-
 /* Firmware Tool */
 
 .home-firmware-div {
-  grid-column-start: 3;
-  grid-column-end: 3;
+  grid-column-start: 2;
+  grid-column-end: 2;
   grid-row-start: 2;
-  grid-row-end: 3;
+  grid-row-end: 2;
 }
 
 .home-firmware-div table {
@@ -530,11 +485,47 @@ td {
   justify-content: center;
 }
 
-.home-comms-div {
-  grid-column-start: 2;
-  grid-column-end: 2;
-  grid-row-start: 3;
+/* Icons */
+
+.icon-row {
+  margin-top: 2em;
+  grid-column-start: 3;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.osm-sensor {
+  grid-column-start: 3;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  margin: auto;
+}
+
+
+/* Name & Firmware version */
+
+.home-serial-firmware-config-div {
+  margin          : 2em 0.5em;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 4;
   grid-row-end: 4;
+}
+
+.serial-num-input {
+  border-style: solid;
+  border-radius: 15px;
+  width: 40%;
+  border-color: var(--osmdark);
+}
+
+.name-input {
+  border-style: solid;
+  border-radius: 15px;
+  width: 40%;
+  border-color: var(--osmdark);
 }
 
 /* Modbus */
@@ -669,6 +660,7 @@ td {
       min-content 1fr min-content
       100px 1fr max-content
   */
+  gap: 10px;
 }
 }
 
@@ -737,6 +729,7 @@ td {
   display: grid;
   grid-template-columns: repeat(3, fr);
   grid-template-rows: repeat(3, 100px);
+  gap: 10px;
   width: 100%;
   text-align: center;
 }

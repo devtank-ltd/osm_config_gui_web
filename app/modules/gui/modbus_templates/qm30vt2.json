@@ -7,6 +7,9 @@
     "bits": 8,
     "parity": "None",
     "stopbits": 1,
+    "version": "1",
+    "mode": "RTU",
+    "baudrate": 19200,
     "registers": {
         "ZRV1": {
             "hex": "0x962",

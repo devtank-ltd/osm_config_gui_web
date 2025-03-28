@@ -5,6 +5,9 @@ import tools from '../../libs/stm-serial-flasher/tools.js';
 import { osm_flash_api_t, rak3172_flash_api_t } from './flash_apis.js';
 import { disable_interaction } from './disable.js';
 import { move_bar } from './progressbar.js';
+import { load_configuration_t } from './load_configuration.js';
+import { save_configuration_t } from './download_config.js';
+import { lora_comms_t, wifi_comms_t } from '../backend/binding.js';
 
 class flash_controller_base_t {
     constructor(params) {
@@ -66,37 +69,34 @@ class flash_controller_base_t {
         });
     }
 
-    flash_firmware(fw_bin) {
+    async flash_firmware(fw_bin) {
         const errlabel = document.getElementById('errorlabel');
         errlabel.style.display = 'none';
         const msg = 'Writing OSM firmware...';
         const disabled = disable_interaction(true);
-        if (disabled) {
-            let stm_api;
-            let serial;
-            this.port.close()
-                .then(() => {
-                    serial = new WebSerial(this.port);
-                    serial.onConnect = () => {};
-                    serial.onDisconnect = () => {};
-                })
-                .then(() => { stm_api = new this.api_type(serial, this.api_ext_params); })
-                .then(() => this.flash_start(stm_api))
-                .then(() => stm_api.eraseAll())
-                .then(() => {
-                    const records = this.get_records(fw_bin);
-                    return flash_controller_base_t.write_data(stm_api, records, msg);
-                })
-                .then(() => stm_api.disconnect())
-                .then(() => {
-                    window.location.reload();
-                })
-                .catch(async () => {
-                    errlabel.style.display = 'block';
-                    errlabel.textContent = 'Failed to write firmware.';
-                    await stm_api.disconnect();
-                    disable_interaction(false);
-                });
+        if (!disabled) return false;
+        try {
+            await this.port.close();
+            const serial = new WebSerial(this.port);
+            serial.onConnect = () => {};
+            serial.onDisconnect = () => {};
+            const stm_api = new this.api_type(serial, this.api_ext_params);
+            await this.flash_start(stm_api);
+            await stm_api.eraseAll();
+            const records = this.get_records(fw_bin);
+            await flash_controller_base_t.write_data(stm_api, records, msg);
+            await stm_api.disconnect();
+            await this.port.open({
+                baudRate: 115200, databits: 8, stopbits: 1, parity: 'none',
+            });
+            disable_interaction(false);
+            return true;
+        } catch (error) {
+            console.log(error);
+            errlabel.style.display = 'block';
+            errlabel.textContent = 'Failed to write firmware.';
+            disable_interaction(false);
+            return false;
         }
     }
 }
@@ -211,6 +211,19 @@ export class firmware_t {
         this.dev = dev;
         this.create_firmware_table = this.create_firmware_table.bind(this);
         this.flash_latest = this.flash_latest.bind(this);
+        this.get_comms = this.get_comms.bind(this);
+        this.trigger_download_config = this.trigger_download_config.bind(this);
+    }
+
+    async get_comms() {
+        let comms;
+        const comms_type = await this.dev.comms_type();
+        if (comms_type && comms_type.includes('LW')) {
+            comms = new lora_comms_t(this.dev);
+        } else if (comms_type && comms_type.includes('WIFI')) {
+            comms = new wifi_comms_t(this.dev);
+        }
+        return comms;
     }
 
     async create_firmware_table(fw_info) {
@@ -242,9 +255,19 @@ export class firmware_t {
 
         const flash_btn = document.getElementById('fw-btn');
         flash_btn.style.display = 'block';
-        flash_btn.addEventListener('click', () => { this.flash_latest(fw_info); });
+        flash_btn.addEventListener('click', () => { this.trigger_download_config(fw_info); });
 
         await disable_interaction(false);
+    }
+
+    async trigger_download_config(fw_info) {
+        if (window.confirm('Update sensor firmware?')) {
+            this.comms = await this.get_comms();
+            this.save_config_obj = new save_configuration_t(this.dev, this.comms);
+            this.write_config_obj = new load_configuration_t(this.dev, this.comms);
+            this.config_save_dict = await this.save_config_obj.save_config();
+            this.flash_latest(fw_info, this.config_save_dict);
+        }
     }
 
     async get_latest_firmware_info(model) {
@@ -264,25 +287,32 @@ export class firmware_t {
         }
     }
 
-    flash_latest(fw_info) {
+    flash_latest(fw_info, config) {
         const { port } = this.dev;
-        if (window.confirm('Have you downloaded your configuration? Flashing firmware may result in loss of config.')) {
-            const fw_path = fw_info.path;
-            fetch(`../../fw_releases/${fw_path}`)
-                .then((r) => r.blob())
-                .then((resp) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const fw_bin = Uint8Array.from(e.target.result, (c) => c.charCodeAt(0));
+        const fw_path = fw_info.path;
+        fetch(`../../fw_releases/${fw_path}`)
+            .then((r) => r.blob())
+            .then((resp) => {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const fw_bin = new Uint8Array(e.target.result);
                         const controller = new flash_controller_t(this.dev);
-                        controller.flash_firmware(fw_bin);
-                    };
-                    reader.onerror = (e) => {
-                        console.log(e);
-                    };
-                    reader.readAsBinaryString(resp);
-                });
-        }
+                        await controller.flash_firmware(fw_bin);
+                        const content = JSON.stringify(config);
+                        this.write_config_obj.load_gui_with_config(content);
+                    } catch (error) {
+                        console.error('Firmware flashing failed:', error);
+                    }
+                };
+                reader.onerror = (e) => {
+                    console.error('File reading error:', e);
+                };
+                reader.readAsArrayBuffer(resp);
+            })
+            .catch((error) => {
+                console.error('Failed to fetch firmware:', error);
+            });
     }
 }
 

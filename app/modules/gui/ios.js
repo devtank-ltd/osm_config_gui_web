@@ -3,6 +3,7 @@ import { disable_interaction } from './disable.js';
 export class io_t {
     constructor(dev) {
         this.dev = dev;
+        this.set_pcnt_debounce = this.set_pcnt_debounce.bind(this);
     }
 
     async open_io() {
@@ -14,6 +15,34 @@ export class io_t {
     async get_ios_measurements() {
         const io_types = await this.dev.get_io_types();
         return io_types;
+    }
+
+    async get_debounce_ms(index) {
+        const dbounce = await this.dev.get_debounce(index);
+        if (!dbounce) {
+            return null;
+        }
+        return dbounce;
+    }
+
+    async set_pcnt_debounce(event) {
+        await disable_interaction(true);
+        this.dbounce_parent = event.target.parentElement.cells[0].textContent;
+        let index;
+        if (this.dbounce_parent === 'CNT1') {
+            index = 0;
+        } else if (this.dbounce_parent === 'CNT2') {
+            index = 1;
+        }
+        this.dbounce_val = event.target.textContent;
+        const is_num = Number(this.dbounce_val);
+        if (!is_num && is_num !== 0) {
+            console.log(`Invalid debounce value: ${this.dbounce_val}`);
+            await disable_interaction(false);
+            return;
+        }
+        await this.dev.set_debounce(this.dbounce_val, index);
+        await disable_interaction(false);
     }
 
     async get_indexs() {
@@ -61,15 +90,18 @@ export class io_t {
         const title = this.add_io_table.tHead.insertRow();
         const title_cell = title.insertCell();
         title_cell.textContent = 'IO Configuration';
-        title_cell.colSpan = 4;
+        title_cell.colSpan = 5;
 
         const headers = this.add_io_table.tHead.insertRow();
         headers.insertCell().textContent = 'Measurement';
         headers.insertCell().textContent = 'Pull';
         headers.insertCell().textContent = 'Edge';
         headers.insertCell().textContent = 'Enabled';
+        headers.insertCell().textContent = 'Debounce (ms)';
 
         const measurements = await this.get_ios_measurements();
+        const debounce_ms_0 = await this.get_debounce_ms(0);
+        const debounce_ms_1 = await this.get_debounce_ms(1);
 
         measurements.forEach((meas) => {
             const io_row = tbody.insertRow();
@@ -106,6 +138,17 @@ export class io_t {
             const chkcell = io_row.insertCell();
             chkcell.appendChild(chk);
             this.checkboxes[meas] = chk;
+
+            const debouncecell = io_row.insertCell();
+            if (meas === 'CNT1') {
+                debouncecell.textContent = debounce_ms_0;
+                debouncecell.contentEditable = true;
+                debouncecell.addEventListener('focusout', this.set_pcnt_debounce);
+            } else if (meas === 'CNT2') {
+                debouncecell.textContent = debounce_ms_1;
+                debouncecell.contentEditable = true;
+                debouncecell.addEventListener('focusout', this.set_pcnt_debounce);
+            }
 
             let key; let
                 value;
