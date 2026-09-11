@@ -81,8 +81,13 @@ export class home_tab_t {
         } else if (comms_type && comms_type.includes('WIFI')) {
             this.comms = new wifi_comms_t(this.dev);
             const wifi = new wifi_config_t(this.dev, this.comms);
-            await wifi.populate_wifi_fields();
+            await wifi.populate_wifi_fields('WIFI');
             await wifi.add_listeners();
+        } else if (comms_type && comms_type.includes('POE')) {
+            this.comms = new wifi_comms_t(this.dev);
+            const poe = new wifi_config_t(this.dev, this.comms);
+            await poe.populate_wifi_fields('POE');
+            await poe.add_listeners();
         } else if (!comms_type) {
             const lora_table = document.getElementById('lora-config-table');
             lora_table.style.display = 'block';

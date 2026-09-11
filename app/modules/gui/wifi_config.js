@@ -176,10 +176,17 @@ export class wifi_config_t {
         this.wifi_ssid_sel.appendChild(otheropt);
     }
 
-    async populate_wifi_fields() {
-        const title = 'WiFi Configuration';
+    async populate_wifi_fields(at_type) {
         const wifi_headers = ['SSID', 'WiFi Password', 'MQTT Address', 'MQTT User', 'MQTT Pwd', 'MQTT Port', 'MQTT Scheme', 'Status'];
-
+        const poe_headers = wifi_headers.slice(2)
+        let title, headers;
+        if (at_type === 'POE') {
+            headers = poe_headers;
+            title = 'MQTT Configuration';
+        } else if (at_type === 'WIFI') {
+            headers = wifi_headers;
+            title = 'Wi-Fi Configuration';
+        }
         this.current_written_ssid = await this.comms.wifi_ssid;
         const wifi_pwd = await this.comms.wifi_pwd;
         const mqtt_addr = await this.comms.mqtt_addr;
@@ -208,7 +215,7 @@ export class wifi_config_t {
         cell.style.textAlign = 'center';
         const comms_status = await this.get_comms_status();
 
-        wifi_headers.forEach(async (i) => {
+        headers.forEach(async (i) => {
             const r = wifi_tBody.insertRow();
             r.insertCell().innerText = i;
             switch (i) {
