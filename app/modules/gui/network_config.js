@@ -1,11 +1,11 @@
 import { disable_interaction } from './disable.js';
 
-export class wifi_config_t {
+export class network_config_t {
     constructor(dev, comms) {
         this.dev = dev;
         this.comms = comms;
         this.write_config = this.write_config.bind(this);
-        this.populate_wifi_fields = this.populate_wifi_fields.bind(this);
+        this.populate_network_fields = this.populate_network_fields.bind(this);
         this.populate_wifi_ssid_dropdown = this.populate_wifi_ssid_dropdown.bind(this);
         this.close_dropdown_menu();
         this.update_wifi_ssid_selection = this.update_wifi_ssid_selection.bind(this);
@@ -176,10 +176,17 @@ export class wifi_config_t {
         this.wifi_ssid_sel.appendChild(otheropt);
     }
 
-    async populate_wifi_fields() {
-        const title = 'WiFi Configuration';
+    async populate_network_fields(at_type) {
         const wifi_headers = ['SSID', 'WiFi Password', 'MQTT Address', 'MQTT User', 'MQTT Pwd', 'MQTT Port', 'MQTT Scheme', 'Status'];
-
+        const poe_headers = wifi_headers.slice(2)
+        let title, headers;
+        if (at_type === 'POE') {
+            headers = poe_headers;
+            title = 'MQTT Configuration';
+        } else if (at_type === 'WIFI') {
+            headers = wifi_headers;
+            title = 'Wi-Fi Configuration';
+        }
         this.current_written_ssid = await this.comms.wifi_ssid;
         const wifi_pwd = await this.comms.wifi_pwd;
         const mqtt_addr = await this.comms.mqtt_addr;
@@ -208,7 +215,7 @@ export class wifi_config_t {
         cell.style.textAlign = 'center';
         const comms_status = await this.get_comms_status();
 
-        wifi_headers.forEach(async (i) => {
+        headers.forEach(async (i) => {
             const r = wifi_tBody.insertRow();
             r.insertCell().innerText = i;
             switch (i) {
