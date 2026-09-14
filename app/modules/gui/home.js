@@ -4,7 +4,7 @@ import { lora_config_t } from './lora_config.js';
 import { load_configuration_t } from './load_configuration.js';
 import { save_configuration_t } from './download_config.js';
 import { lora_comms_t, wifi_comms_t } from '../backend/binding.js';
-import { wifi_config_t } from './wifi_config.js';
+import { network_config_t } from './network_config.js';
 import { console_t } from './console.js';
 import { adv_config_t } from './adv_conf.js';
 import { disable_interaction, limit_characters } from './disable.js';
@@ -80,13 +80,13 @@ export class home_tab_t {
             fw_table.style.gridColumnEnd = 3;
         } else if (comms_type && comms_type.includes('WIFI')) {
             this.comms = new wifi_comms_t(this.dev);
-            const wifi = new wifi_config_t(this.dev, this.comms);
-            await wifi.populate_wifi_fields('WIFI');
+            const wifi = new network_config_t(this.dev, this.comms);
+            await wifi.populate_network_fields('WIFI');
             await wifi.add_listeners();
         } else if (comms_type && comms_type.includes('POE')) {
             this.comms = new wifi_comms_t(this.dev);
-            const poe = new wifi_config_t(this.dev, this.comms);
-            await poe.populate_wifi_fields('POE');
+            const poe = new network_config_t(this.dev, this.comms);
+            await poe.populate_network_fields('POE');
             await poe.add_listeners();
         } else if (!comms_type) {
             const lora_table = document.getElementById('lora-config-table');

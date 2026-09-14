@@ -1,11 +1,11 @@
 import { disable_interaction } from './disable.js';
 
-export class wifi_config_t {
+export class network_config_t {
     constructor(dev, comms) {
         this.dev = dev;
         this.comms = comms;
         this.write_config = this.write_config.bind(this);
-        this.populate_wifi_fields = this.populate_wifi_fields.bind(this);
+        this.populate_network_fields = this.populate_network_fields.bind(this);
         this.populate_wifi_ssid_dropdown = this.populate_wifi_ssid_dropdown.bind(this);
         this.close_dropdown_menu();
         this.update_wifi_ssid_selection = this.update_wifi_ssid_selection.bind(this);
@@ -176,7 +176,7 @@ export class wifi_config_t {
         this.wifi_ssid_sel.appendChild(otheropt);
     }
 
-    async populate_wifi_fields(at_type) {
+    async populate_network_fields(at_type) {
         const wifi_headers = ['SSID', 'WiFi Password', 'MQTT Address', 'MQTT User', 'MQTT Pwd', 'MQTT Port', 'MQTT Scheme', 'Status'];
         const poe_headers = wifi_headers.slice(2)
         let title, headers;
